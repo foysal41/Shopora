@@ -95,7 +95,7 @@ const PopularProducts = () => {
         {/* Products */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5">
 
-          {products.map((product) => {
+          {products.slice(0,10).map((product) => {
             const price =
               product.salePrice && product.salePrice > 0
                 ? product.salePrice

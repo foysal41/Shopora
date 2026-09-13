@@ -382,7 +382,7 @@ export default function ShopPage() {
 
             {/* Loading */}
             {loading && (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <div
                     key={index}
@@ -462,7 +462,7 @@ export default function ShopPage() {
             {!loading &&
               !error &&
               filteredProducts.length > 0 && (
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
                   {filteredProducts.map((product) => {
                     const price = Number(
                       product.salePrice ??

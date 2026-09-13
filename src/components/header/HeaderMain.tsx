@@ -29,8 +29,6 @@ import { authClient } from "@/lib/auth-client";
 import { apiGet } from "@/lib/core/server";
 import { getWishlist } from "@/lib/api/wishlist";
 
-
-
 interface SearchProduct {
   id: string;
   name: string;
@@ -52,8 +50,7 @@ interface HeaderMainProps {
   onCategoryToggle: () => void;
 }
 
-const HeaderMain = ({ onMenuOpen,}: HeaderMainProps) => {
-
+const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
   const [accountOpen, setAccountOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
@@ -64,109 +61,117 @@ const HeaderMain = ({ onMenuOpen,}: HeaderMainProps) => {
 
   const router = useRouter();
 
- useEffect(() => {
-  const updateCartCount = () => {
-    const savedCart = localStorage.getItem("shopora-cart");
-
-    if (!savedCart) {
-      setCartCount(0);
-      return;
-    }
-
-    try {
-      const cart = JSON.parse(savedCart);
-
-      const totalQuantity = cart.reduce(
-        (total: number, item: { quantity: number }) =>
-          total + item.quantity,
-        0,
-      );
-
-      setCartCount(totalQuantity);
-    } catch (error) {
-      console.error("CART COUNT ERROR:", error);
-      setCartCount(0);
-    }
-  };
-
-  // Initial count
-  updateCartCount();
-
-  // Listen for cart changes
-  window.addEventListener("cart-updated", updateCartCount);
-
-  return () => {
-    window.removeEventListener("cart-updated", updateCartCount);
-  };
-}, []); 
-
-useEffect(() => {
-  const query = search.trim();
-
-  const timer = setTimeout(async () => {
-    if (!query) {
-      setSearchResults([]);
-      setSearchLoading(false);
-      return;
-    }
-
-    try {
-      setSearchLoading(true);
-
-      const response = await apiGet<SearchProductsResponse>(
-        `/api/v1/products/search?q=${encodeURIComponent(query)}`,
-      );
-
-      // console.log("LIVE SEARCH RESULT:", response.data);
-
-      setSearchResults(response.data || []);
-    } catch (error) {
-      console.error("LIVE SEARCH ERROR:", error);
-      setSearchResults([]);
-    } finally {
-      setSearchLoading(false);
-    }
-  }, 300);
-
-  return () => clearTimeout(timer);
-}, [search]);
-
-
-
   // Better Auth Session
+  // IMPORTANT: user must be initialized before wishlist useEffect
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
+  // =====================================================
+  // CART COUNT
+  // =====================================================
   useEffect(() => {
-  const updateWishlistCount = async () => {
-    if (!user?.id) {
-      setWishlistCount(0);
-      return;
-    }
+    const updateCartCount = () => {
+      const savedCart = localStorage.getItem("shopora-cart");
 
-    try {
-      const wishlist = await getWishlist(user.id);
-      setWishlistCount(wishlist.length);
-    } catch (error) {
-      console.error("WISHLIST COUNT ERROR:", error);
-      setWishlistCount(0);
-    }
-  };
+      if (!savedCart) {
+        setCartCount(0);
+        return;
+      }
 
-  updateWishlistCount();
+      try {
+        const cart = JSON.parse(savedCart);
 
-  window.addEventListener(
-    "wishlist-updated",
-    updateWishlistCount
-  );
+        const totalQuantity = cart.reduce(
+          (total: number, item: { quantity: number }) =>
+            total + item.quantity,
+          0,
+        );
 
-  return () => {
-    window.removeEventListener(
+        setCartCount(totalQuantity);
+      } catch (error) {
+        console.error("CART COUNT ERROR:", error);
+        setCartCount(0);
+      }
+    };
+
+    // Initial count
+    updateCartCount();
+
+    // Listen for cart changes
+    window.addEventListener("cart-updated", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cart-updated", updateCartCount);
+    };
+  }, []);
+
+  // =====================================================
+  // WISHLIST COUNT
+  // =====================================================
+  useEffect(() => {
+    const updateWishlistCount = async () => {
+      if (!user?.id) {
+        setWishlistCount(0);
+        return;
+      }
+
+      try {
+        const wishlist = await getWishlist(user.id);
+        setWishlistCount(wishlist.length);
+      } catch (error) {
+        console.error("WISHLIST COUNT ERROR:", error);
+        setWishlistCount(0);
+      }
+    };
+
+    updateWishlistCount();
+
+    window.addEventListener(
       "wishlist-updated",
-      updateWishlistCount
+      updateWishlistCount,
     );
-  };
-}, [user?.id]);
+
+    return () => {
+      window.removeEventListener(
+        "wishlist-updated",
+        updateWishlistCount,
+      );
+    };
+  }, [user?.id]);
+
+  // =====================================================
+  // LIVE SEARCH
+  // =====================================================
+  useEffect(() => {
+    const query = search.trim();
+
+    const timer = setTimeout(async () => {
+      if (!query) {
+        setSearchResults([]);
+        setSearchLoading(false);
+        return;
+      }
+
+      try {
+        setSearchLoading(true);
+
+        const response = await apiGet<SearchProductsResponse>(
+          `/api/v1/products/search?q=${encodeURIComponent(query)}`,
+        );
+
+        // console.log("LIVE SEARCH RESULT:", response.data);
+
+        setSearchResults(response.data || []);
+      } catch (error) {
+        console.error("LIVE SEARCH ERROR:", error);
+        setSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const dashboardPath =
     user?.role === "Seller"
@@ -175,16 +180,19 @@ useEffect(() => {
         ? "/dashboard/admin"
         : "/dashboard/customer";
 
-  // Search Handler
+  // =====================================================
+  // SEARCH HANDLER
+  // =====================================================
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const query = search.trim();
-   
 
     if (!query) return;
 
-    router.push(`/products/search?q=${encodeURIComponent(query)}`);
+    router.push(
+      `/products/search?q=${encodeURIComponent(query)}`,
+    );
 
     setSearch("");
   };
@@ -199,7 +207,10 @@ useEffect(() => {
           {/* =================================================
               LOGO
           ================================================== */}
-          <Link href="/" className="flex w-43.75 shrink-0 items-center gap-2.5">
+          <Link
+            href="/"
+            className="flex w-43.75 shrink-0 items-center gap-2.5"
+          >
             <div className="relative flex h-12 w-10 items-end justify-center rounded-lg bg-[#0F766E] shadow-sm">
               {/* Bag Handle */}
               <div className="absolute -top-2 left-1/2 h-5 w-5 -translate-x-1/2 rounded-t-full border-[3px] border-b-0 border-[#0F766E]" />
@@ -235,71 +246,76 @@ useEffect(() => {
               className="min-w-0 flex-1 bg-transparent px-4 font-['Poppins'] text-[14px] text-[#1E293B] outline-none placeholder:text-[#94A3B8]"
             />
 
-            {search.trim() && (searchResults.length > 0 || searchLoading) && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-[#E5EEEE] bg-white shadow-lg">
-                {searchLoading ? (
-                  <div className="px-4 py-4 text-sm text-[#64748B]">
-                    Searching...
-                  </div>
-                ) : (
-                  <div className="max-h-90 overflow-y-auto">
-                    {searchResults.slice(0, 5).map((product) => (
-                      <button
-                        key={product.id}
-                        type="button"
-                        onClick={() => {
-                          setSearch("");
-                          setSearchResults([]);
-                          router.push(`/products/${product.id}`);
-                        }}
-                        className="flex w-full items-center gap-3 border-b border-[#F0F4F4] px-4 py-3 text-left transition hover:bg-[#F8FAFA]"
-                      >
-                        {/* Product Image */}
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[#F8FAFA]">
-                          {product.images?.[0] ? (
-                            <Image
-                              src={product.images[0]}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-xs text-[#94A3B8]">
-                              No Image
+            {search.trim() &&
+              (searchResults.length > 0 || searchLoading) && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-[#E5EEEE] bg-white shadow-lg">
+                  {searchLoading ? (
+                    <div className="px-4 py-4 text-sm text-[#64748B]">
+                      Searching...
+                    </div>
+                  ) : (
+                    <div className="max-h-90 overflow-y-auto">
+                      {searchResults
+                        .slice(0, 5)
+                        .map((product) => (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => {
+                              setSearch("");
+                              setSearchResults([]);
+                              router.push(
+                                `/products/${product.id}`,
+                              );
+                            }}
+                            className="flex w-full items-center gap-3 border-b border-[#F0F4F4] px-4 py-3 text-left transition hover:bg-[#F8FAFA]"
+                          >
+                            {/* Product Image */}
+                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[#F8FAFA]">
+                              {product.images?.[0] ? (
+                                <Image
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center text-xs text-[#94A3B8]">
+                                  No Image
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        {/* Product Info */}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-[#1E293B]">
-                            {product.name}
-                          </p>
+                            {/* Product Info */}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-[#1E293B]">
+                                {product.name}
+                              </p>
 
-                          <div className="mt-1 flex items-center gap-2">
-                            {product.salePrice !== null ? (
-                              <>
-                                <span className="text-sm font-semibold text-[#0F766E]">
-                                  ${product.salePrice}
-                                </span>
+                              <div className="mt-1 flex items-center gap-2">
+                                {product.salePrice !== null ? (
+                                  <>
+                                    <span className="text-sm font-semibold text-[#0F766E]">
+                                      ${product.salePrice}
+                                    </span>
 
-                                <span className="text-xs text-[#94A3B8] line-through">
-                                  ${product.regularPrice}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-sm font-semibold text-[#0F766E]">
-                                ${product.regularPrice}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                                    <span className="text-xs text-[#94A3B8] line-through">
+                                      ${product.regularPrice}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-sm font-semibold text-[#0F766E]">
+                                    ${product.regularPrice}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
             {/* Search Button */}
             <button
@@ -374,7 +390,9 @@ useEffect(() => {
               {/* Account Button */}
               <button
                 type="button"
-                onClick={() => setAccountOpen((prev) => !prev)}
+                onClick={() =>
+                  setAccountOpen((prev) => !prev)
+                }
                 className=""
               >
                 {user ? (
@@ -477,7 +495,10 @@ useEffect(() => {
                           href="/dashboard/seller/orders"
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <ShoppingBag size={19} strokeWidth={1.7} />
+                          <ShoppingBag
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           Orders
                         </Link>
 
@@ -486,7 +507,10 @@ useEffect(() => {
                           href="/dashboard/seller/inventory"
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <Warehouse size={19} strokeWidth={1.7} />
+                          <Warehouse
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           Inventory
                         </Link>
 
@@ -495,7 +519,10 @@ useEffect(() => {
                           href="/dashboard/seller/coupons"
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <Ticket size={19} strokeWidth={1.7} />
+                          <Ticket
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           Coupons
                         </Link>
                       </>
@@ -517,7 +544,10 @@ useEffect(() => {
                           href={`${dashboardPath}/my-order`}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <Package size={19} strokeWidth={1.7} />
+                          <Package
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           My Orders
                         </Link>
 
@@ -526,7 +556,10 @@ useEffect(() => {
                           href={`${dashboardPath}/wishlist`}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <Heart size={19} strokeWidth={1.7} />
+                          <Heart
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           My Wishlist
                         </Link>
 
@@ -535,7 +568,10 @@ useEffect(() => {
                           href={`${dashboardPath}/coupons`}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <Ticket size={19} strokeWidth={1.7} />
+                          <Ticket
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           My Coupons
                         </Link>
 
@@ -544,7 +580,10 @@ useEffect(() => {
                           href={`${dashboardPath}/addresses`}
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                         >
-                          <MapPin size={19} strokeWidth={1.7} />
+                          <MapPin
+                            size={19}
+                            strokeWidth={1.7}
+                          />
                           Addresses
                         </Link>
                       </>
@@ -555,7 +594,10 @@ useEffect(() => {
                       href="/account/settings"
                       className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                     >
-                      <Settings size={19} strokeWidth={1.7} />
+                      <Settings
+                        size={19}
+                        strokeWidth={1.7}
+                      />
                       Account Settings
                     </Link>
 
@@ -568,7 +610,10 @@ useEffect(() => {
                       }}
                       className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm font-medium text-[#FF6B6B] transition-colors hover:bg-[#FFF1F1]"
                     >
-                      <LogOut size={19} strokeWidth={1.7} />
+                      <LogOut
+                        size={19}
+                        strokeWidth={1.7}
+                      />
                       Logout
                     </button>
                   </>
@@ -591,7 +636,10 @@ useEffect(() => {
                       onClick={() => setAccountOpen(false)}
                       className="mt-3 flex w-full items-center gap-3 rounded-lg bg-[#0F766E] px-3 py-3 font-['Poppins'] text-sm font-medium text-white transition-colors hover:bg-[#0B625B]"
                     >
-                      <LogIn size={19} strokeWidth={1.7} />
+                      <LogIn
+                        size={19}
+                        strokeWidth={1.7}
+                      />
                       Login
                     </Link>
 
@@ -601,7 +649,10 @@ useEffect(() => {
                       onClick={() => setAccountOpen(false)}
                       className="mt-2 flex w-full items-center gap-3 rounded-lg border border-[#0F766E] px-3 py-3 font-['Poppins'] text-sm font-medium text-[#0F766E] transition-colors hover:bg-[#E8F5F3]"
                     >
-                      <UserPlus size={19} strokeWidth={1.7} />
+                      <UserPlus
+                        size={19}
+                        strokeWidth={1.7}
+                      />
                       Register
                     </Link>
                   </>
@@ -626,11 +677,16 @@ useEffect(() => {
               onClick={onMenuOpen}
               className="flex h-9 w-9 items-center justify-center rounded-lg text-[#475569] transition-colors hover:bg-[#F6FAF9] hover:text-[#0F766E]"
             >
-              <span className="text-xl leading-none">☰</span>
+              <span className="text-xl leading-none">
+                ☰
+              </span>
             </button>
 
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2">
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+            >
               <div className="relative flex h-9 w-8 items-end justify-center rounded-md bg-[#0F766E]">
                 <div className="absolute -top-1.5 left-1/2 h-3.5 w-4 -translate-x-1/2 rounded-t-full border-2 border-b-0 border-[#0F766E]" />
 
@@ -674,7 +730,10 @@ useEffect(() => {
               aria-label="Cart"
               className="relative text-[#475569]"
             >
-              <ShoppingCart size={20} strokeWidth={1.7} />
+              <ShoppingCart
+                size={20}
+                strokeWidth={1.7}
+              />
 
               {cartCount > 0 && (
                 <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[7px] font-semibold text-white">
@@ -690,7 +749,9 @@ useEffect(() => {
               <button
                 type="button"
                 aria-label="Account"
-                onClick={() => setAccountOpen((prev) => !prev)}
+                onClick={() =>
+                  setAccountOpen((prev) => !prev)
+                }
                 className="flex items-center gap-1 text-[#475569]"
               >
                 {user ? (
@@ -712,7 +773,10 @@ useEffect(() => {
                     )}
                   </div>
                 ) : (
-                  <UserRound size={20} strokeWidth={1.7} />
+                  <UserRound
+                    size={20}
+                    strokeWidth={1.7}
+                  />
                 )}
 
                 <ChevronDown
@@ -748,17 +812,24 @@ useEffect(() => {
                     {/* Dashboard */}
                     <Link
                       href={dashboardPath}
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="mt-2 flex items-center gap-3 rounded-lg bg-[#E8F5F3] px-3 py-3 font-['Poppins'] text-sm font-medium text-[#1E293B]"
                     >
-                      <LayoutDashboard size={18} className="text-[#0F766E]" />
+                      <LayoutDashboard
+                        size={18}
+                        className="text-[#0F766E]"
+                      />
                       Dashboard
                     </Link>
 
                     {/* Orders */}
                     <Link
                       href="/orders"
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="flex items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] hover:bg-[#F6FAF9]"
                     >
                       <Package size={18} />
@@ -768,7 +839,9 @@ useEffect(() => {
                     {/* Wishlist */}
                     <Link
                       href="/wishlist"
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="flex items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] hover:bg-[#F6FAF9]"
                     >
                       <Heart size={18} />
@@ -778,7 +851,9 @@ useEffect(() => {
                     {/* Settings */}
                     <Link
                       href="/account/settings"
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="flex items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] hover:bg-[#F6FAF9]"
                     >
                       <Settings size={18} />
@@ -814,7 +889,9 @@ useEffect(() => {
                     {/* Login */}
                     <Link
                       href="/auth/login"
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="mt-3 flex items-center gap-3 rounded-lg bg-[#0F766E] px-3 py-3 font-['Poppins'] text-sm font-medium text-white"
                     >
                       <LogIn size={18} />
@@ -824,7 +901,9 @@ useEffect(() => {
                     {/* Register */}
                     <Link
                       href="/auth/register"
-                      onClick={() => setAccountOpen(false)}
+                      onClick={() =>
+                        setAccountOpen(false)
+                      }
                       className="mt-2 flex items-center gap-3 rounded-lg border border-[#0F766E] px-3 py-3 font-['Poppins'] text-sm font-medium text-[#0F766E]"
                     >
                       <UserPlus size={18} />
@@ -854,71 +933,78 @@ useEffect(() => {
             />
 
             {/* Mobile Search Suggestions */}
-            {search.trim() && (searchResults.length > 0 || searchLoading) && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-[#E5EEEE] bg-white shadow-lg">
-                {searchLoading ? (
-                  <div className="px-4 py-4 font-['Poppins'] text-[14px] text-[#64748B]">
-                    Searching...
-                  </div>
-                ) : (
-                  <div className="max-h-80 overflow-y-auto">
-                    {searchResults.slice(0, 5).map((product) => (
-                      <button
-                        key={product.id}
-                        type="button"
-                        onClick={() => {
-                          setSearch("");
-                          setSearchResults([]);
-                          router.push(`/products/${product.id}`);
-                        }}
-                        className="flex w-full items-center gap-3 border-b border-[#F0F4F4] px-3 py-3 text-left transition hover:bg-[#F8FAFA]"
-                      >
-                        {/* Product Image */}
-                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[#F8FAFA]">
-                          {product.images?.[0] ? (
-                            <Image
-                              src={product.images[0]}
-                              alt={product.name}
-                              fill
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center font-['Poppins'] text-[14px] text-[#94A3B8]">
-                              No Image
+            {search.trim() &&
+              (searchResults.length > 0 ||
+                searchLoading) && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-lg border border-[#E5EEEE] bg-white shadow-lg">
+                  {searchLoading ? (
+                    <div className="px-4 py-4 font-['Poppins'] text-[14px] text-[#64748B]">
+                      Searching...
+                    </div>
+                  ) : (
+                    <div className="max-h-80 overflow-y-auto">
+                      {searchResults
+                        .slice(0, 5)
+                        .map((product) => (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => {
+                              setSearch("");
+                              setSearchResults([]);
+                              router.push(
+                                `/products/${product.id}`,
+                              );
+                            }}
+                            className="flex w-full items-center gap-3 border-b border-[#F0F4F4] px-3 py-3 text-left transition hover:bg-[#F8FAFA]"
+                          >
+                            {/* Product Image */}
+                            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[#F8FAFA]">
+                              {product.images?.[0] ? (
+                                <Image
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center font-['Poppins'] text-[14px] text-[#94A3B8]">
+                                  No Image
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        {/* Product Info */}
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate font-['Poppins'] text-[14px] font-medium text-[#1E293B]">
-                            {product.name}
-                          </p>
+                            {/* Product Info */}
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate font-['Poppins'] text-[14px] font-medium text-[#1E293B]">
+                                {product.name}
+                              </p>
 
-                          <div className="mt-1 flex items-center gap-2">
-                            {product.salePrice !== null ? (
-                              <>
-                                <span className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
-                                  ${product.salePrice}
-                                </span>
+                              <div className="mt-1 flex items-center gap-2">
+                                {product.salePrice !==
+                                null ? (
+                                  <>
+                                    <span className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
+                                      ${product.salePrice}
+                                    </span>
 
-                                <span className="font-['Poppins'] text-[14px] text-[#94A3B8] line-through">
-                                  ${product.regularPrice}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
-                                ${product.regularPrice}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                                    <span className="font-['Poppins'] text-[14px] text-[#94A3B8] line-through">
+                                      ${product.regularPrice}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
+                                    ${product.regularPrice}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
             {/* Search Button */}
             <button
@@ -926,7 +1012,10 @@ useEffect(() => {
               aria-label="Search"
               className="flex w-10 shrink-0 items-center justify-center bg-[#0F766E] text-white"
             >
-              <Search size={17} strokeWidth={1.8} />
+              <Search
+                size={17}
+                strokeWidth={1.8}
+              />
             </button>
           </form>
         </div>

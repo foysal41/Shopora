@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, ArrowRight, PackageSearch } from "lucide-react";
+import { ArrowLeft, PackageSearch } from "lucide-react";
 
 interface CategoryProduct {
   id: string;
@@ -124,10 +124,12 @@ const CategoryDetailPage = () => {
         <div className="mt-6 flex flex-col items-center gap-5 rounded-2xl border border-[#E8EEEE] bg-white p-8 text-center sm:flex-row sm:text-left">
           <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#E8EEEE] bg-[#F6FAF9]">
             {category.image ? (
-              <img
+              <Image
                 src={category.image}
                 alt={category.name}
                 className="h-full w-full object-cover mix-blend-multiply"
+                height={512}
+                width={512}
               />
             ) : (
               <span className="font-['Poppins'] text-3xl font-bold text-[#0F766E]">
@@ -155,13 +157,7 @@ const CategoryDetailPage = () => {
             </div>
           </div>
 
-          <Link
-            href="/shop"
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-['Poppins'] text-sm font-semibold text-white transition hover:bg-[#0B625B]"
-          >
-            Shop Now
-            <ArrowRight size={17} />
-          </Link>
+          
         </div>
 
         {/* Products */}
