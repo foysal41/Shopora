@@ -214,6 +214,92 @@ const Inventory = () => {
     }).format(amount);
   };
 
+// =====================================================
+// EXPORT INVENTORY REPORT
+// =====================================================
+
+const handleExport = () => {
+  if (filteredProducts.length === 0) {
+    alert("No inventory data available to export.");
+    return;
+  }
+
+  const headers = [
+    "Product Name",
+    "SKU",
+    "Category",
+    "Brand",
+    "Regular Price",
+    "Sale Price",
+    "Stock Quantity",
+    "Low Stock Alert",
+    "Stock Status",
+    "Stock Value",
+  ];
+
+  const rows = filteredProducts.map((product) => {
+    const status = getStockStatus(product);
+
+    const stockValue =
+      (product.salePrice || product.regularPrice || 0) *
+      product.stockQuantity;
+
+    return [
+      product.name,
+      product.sku,
+      product.category,
+      product.brand || "",
+      product.regularPrice || 0,
+      product.salePrice || "",
+      product.stockQuantity,
+      product.lowStockAlert,
+      getStatusText(status),
+      stockValue.toFixed(2),
+    ];
+  });
+
+  const csvContent = [
+    headers,
+    ...rows,
+  ]
+    .map((row) =>
+      row
+        .map((value) => {
+          const text = String(value ?? "");
+
+          // Escape quotes and commas
+          return `"${text.replace(/"/g, '""')}"`;
+        })
+        .join(",")
+    )
+    .join("\n");
+
+  const blob = new Blob(
+    [csvContent],
+    {
+      type: "text/csv;charset=utf-8;",
+    }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+
+  link.download = `shopora-inventory-${new Date()
+    .toISOString()
+    .split("T")[0]}.csv`;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+};
+  
   // =====================================================
   // RESET FILTER
   // =====================================================
@@ -252,18 +338,13 @@ const Inventory = () => {
         <div className="flex gap-3">
 
           <button
+           onClick={handleExport}
             className="flex h-11 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-[14px] font-semibold text-[#0F766E] shadow-sm transition hover:bg-slate-50"
           >
             <Download size={17} />
             Export Report
           </button>
 
-          <button
-            className="flex h-11 items-center gap-2 rounded-lg bg-[#0F766E] px-4 text-[14px] font-semibold text-white shadow-sm transition hover:bg-[#0B625B]"
-          >
-            <Settings size={17} />
-            Inventory Settings
-          </button>
 
         </div>
       </div>
