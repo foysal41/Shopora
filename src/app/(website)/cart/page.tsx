@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   ArrowRight,
   Minus,
@@ -11,6 +12,7 @@ import {
   Trash2,
   Truck,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type CartItem = {
   id: string;
@@ -27,6 +29,8 @@ const SHIPPING_FEE = 10;
 const FREE_SHIPPING_THRESHOLD = 50;
 
 const CartPage = () => {
+  const router = useRouter();
+
   /* =========================================================
      CART STATE
   ========================================================= */
@@ -61,7 +65,7 @@ useEffect(() => {
   } catch (error) {
     console.error("FAILED TO LOAD CART:", error);
   } finally {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+
     setIsHydrated(true);
   }
 }, []);
@@ -235,29 +239,32 @@ useEffect(() => {
      CHECKOUT
   ========================================================= */
 
-  const handleCheckout = () => {
-    if (selectedItems.length === 0) {
-      alert("Please select at least one product.");
-      return;
-    }
+const handleCheckout = () => {
+  if (selectedItems.length === 0) {
+    alert("Please select at least one product.");
+    return;
+  }
 
-    const checkoutData = {
-      items: cartItems.filter((item) =>
-        selectedItems.includes(item.id)
-      ),
+  const selectedCartItems = cartItems.filter((item) =>
+    selectedItems.includes(item.id)
+  );
+
+  localStorage.setItem(
+    "shopora-checkout",
+    JSON.stringify({
+      items: selectedCartItems,
       subtotal,
       shipping,
       total,
-    };
+    })
+  );
 
-    console.log(
-      "CHECKOUT DATA:",
-      checkoutData
-    );
+  const firstItem = selectedCartItems[0];
 
-    // Later connect this with your checkout page
-    // router.push("/checkout");
-  };
+  router.push(
+    `/checkout/${firstItem.id}?quantity=${firstItem.quantity}&fromCart=true`
+  );
+};
 
   /* =========================================================
      RENDER
