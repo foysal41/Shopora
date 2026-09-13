@@ -24,8 +24,6 @@ import {
   Grid2X2,
   Users,
   Warehouse,
-  DollarSign,
-  Wallet,
   Bot,
   FileBarChart,
   ChevronRight,
@@ -148,16 +146,6 @@ const sellerNavItems: NavItem[] = [
     label: "Coupons",
     href: "/dashboard/seller/coupons",
     icon: Ticket,
-  },
-  {
-    label: "Earnings",
-    href: "/dashboard/seller/earnings",
-    icon: DollarSign,
-  },
-  {
-    label: "Payouts",
-    href: "/dashboard/seller/payouts",
-    icon: Wallet,
   },
 
   {

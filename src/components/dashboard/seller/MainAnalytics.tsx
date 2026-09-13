@@ -10,7 +10,6 @@ import {
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
-
 import { getSellerDashboardStats } from "@/lib/api/sellerDashboard";
 import { useSession } from "@/lib/auth-client";
 
@@ -23,7 +22,7 @@ type TopSellingProduct = {
   name: string;
   sold: number;
   revenue: number;
-  image: string;
+  image: string | null;
 };
 
 type OrderOverview = {
@@ -44,6 +43,11 @@ type AnalyticsData = {
   topSellingProducts: TopSellingProduct[];
   ordersOverview: OrderOverview[];
   recentOrders: RecentOrder[];
+};
+
+type MainAnalyticsProps = {
+  startDate: string;
+  endDate: string;
 };
 
 /* =========================================================
@@ -111,61 +115,45 @@ const StatusBadge = ({ status }: { status: string }) => {
    MAIN ANALYTICS
 ========================================================= */
 
-const MainAnalytics = () => {
-  /* =========================================================
-     SESSION
-  ========================================================= */
-
+const MainAnalytics = ({
+  startDate,
+  endDate,
+}: MainAnalyticsProps) => {
   const { data: session } = useSession();
 
   const sellerId = session?.user?.id;
 
-  /* =========================================================
-     STATES
-  ========================================================= */
-
   const [analytics, setAnalytics] =
     useState<AnalyticsData | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   /* =========================================================
      FETCH ANALYTICS
   ========================================================= */
 
   useEffect(() => {
+    if (!sellerId) {
+    return;
+  }
+
     const fetchAnalytics = async () => {
-      if (!sellerId) {
-        console.log(
-          "Seller ID not available"
-        );
-
-        setLoading(false);
-
-        return;
-      }
-
       try {
         setLoading(true);
-
         setError("");
 
-        console.log(
-          "Fetching seller analytics..."
-        );
-
-        console.log(
-          "Seller ID:",
-          sellerId
-        );
+        console.log("Fetching seller analytics...");
+        console.log("Seller ID:", sellerId);
+        console.log("Start Date:", startDate);
+        console.log("End Date:", endDate);
 
         const response =
           await getSellerDashboardStats(
-            sellerId
+            sellerId,
+            startDate,
+            endDate
           );
 
         console.log(
@@ -173,25 +161,7 @@ const MainAnalytics = () => {
           response
         );
 
-        /*
-          Backend response already contains:
-
-          data.analytics
-        */
-
-        const dashboardData =
-          response as typeof response & {
-            analytics: AnalyticsData;
-          };
-
-        console.log(
-          "Analytics Data:",
-          dashboardData.analytics
-        );
-
-        setAnalytics(
-          dashboardData.analytics
-        );
+        setAnalytics(response.analytics);
       } catch (error) {
         console.error(
           "Seller Analytics Fetch Error:",
@@ -209,7 +179,7 @@ const MainAnalytics = () => {
     };
 
     fetchAnalytics();
-  }, [sellerId]);
+  }, [sellerId, startDate, endDate]);
 
   /* =========================================================
      LOADING
@@ -253,26 +223,16 @@ const MainAnalytics = () => {
     );
   }
 
-  /* =========================================================
-     DATA
-  ========================================================= */
-
   const {
     topSellingProducts,
     ordersOverview,
     recentOrders,
   } = analytics;
 
-  /* =========================================================
-     TOTAL ORDERS
-  ========================================================= */
-
-  const totalOrders =
-    ordersOverview.reduce(
-      (total, item) =>
-        total + item.count,
-      0
-    );
+  const totalOrders = ordersOverview.reduce(
+    (total, item) => total + item.count,
+    0
+  );
 
   /* =========================================================
      RETURN
@@ -287,10 +247,7 @@ const MainAnalytics = () => {
 
       <div className="rounded-xl border border-[#E8EEEE] bg-white p-5 xl:col-span-5">
 
-        {/* Header */}
-
         <div className="flex items-center justify-between">
-
           <h2 className="font-['Poppins'] text-[17px] font-semibold text-[#1E293B]">
             Top Selling Products
           </h2>
@@ -301,10 +258,7 @@ const MainAnalytics = () => {
           >
             View All
           </button>
-
         </div>
-
-        {/* Table Header */}
 
         <div className="mt-5 grid grid-cols-[1fr_55px_85px] border-b border-[#E8EEEE] pb-3">
 
@@ -322,10 +276,7 @@ const MainAnalytics = () => {
 
         </div>
 
-        {/* Products */}
-
         <div>
-
           {topSellingProducts.length > 0 ? (
             topSellingProducts.map(
               (product, index) => (
@@ -333,8 +284,6 @@ const MainAnalytics = () => {
                   key={product.id}
                   className="grid grid-cols-[1fr_55px_85px] items-center border-b border-[#F1F5F9] py-3 last:border-0"
                 >
-
-                  {/* Product */}
 
                   <div className="flex min-w-0 items-center gap-3">
 
@@ -366,13 +315,9 @@ const MainAnalytics = () => {
 
                   </div>
 
-                  {/* Sold */}
-
                   <span className="text-right font-['Poppins'] text-[14px] font-semibold text-[#334155]">
                     {product.sold}
                   </span>
-
-                  {/* Revenue */}
 
                   <span className="text-right font-['Poppins'] text-[14px] font-semibold text-[#334155]">
                     $
@@ -386,14 +331,11 @@ const MainAnalytics = () => {
             )
           ) : (
             <div className="py-8 text-center">
-
               <p className="font-['Poppins'] text-[14px] text-[#94A3B8]">
                 No selling data available.
               </p>
-
             </div>
           )}
-
         </div>
 
       </div>
@@ -403,8 +345,6 @@ const MainAnalytics = () => {
       ================================================== */}
 
       <div className="rounded-xl border border-[#E8EEEE] bg-white p-5 xl:col-span-3">
-
-        {/* Header */}
 
         <div className="flex items-center justify-between">
 
@@ -421,69 +361,56 @@ const MainAnalytics = () => {
 
         </div>
 
-        {/* Status List */}
-
         <div className="mt-4">
 
-          {ordersOverview.map(
-            (status) => {
+          {ordersOverview.map((status) => {
 
-              const config =
-                statusConfig[
-                  status.name
-                ] || {
-                  icon: Package,
-                  className:
-                    "bg-gray-100 text-gray-600",
-                };
+            const config =
+              statusConfig[status.name] || {
+                icon: Package,
+                className:
+                  "bg-gray-100 text-gray-600",
+              };
 
-              const Icon =
-                config.icon;
+            const Icon = config.icon;
 
-              return (
-                <div
-                  key={status.name}
-                  className="flex items-center justify-between border-b border-[#F1F5F9] py-3 last:border-0"
-                >
+            return (
+              <div
+                key={status.name}
+                className="flex items-center justify-between border-b border-[#F1F5F9] py-3 last:border-0"
+              >
 
-                  {/* Status */}
+                <div className="flex items-center gap-3">
 
-                  <div className="flex items-center gap-3">
-
-                    <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${config.className}`}
-                    >
-                      <Icon size={16} />
-                    </div>
-
-                    <span className="font-['Poppins'] text-[14px] font-medium text-[#475569]">
-                      {status.name}
-                    </span>
-
+                  <div
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${config.className}`}
+                  >
+                    <Icon size={16} />
                   </div>
 
-                  {/* Count + Percentage */}
-
-                  <div className="flex items-center gap-5">
-
-                    <span className="font-['Poppins'] text-[14px] font-semibold text-[#334155]">
-                      {status.count}
-                    </span>
-
-                    <span className="w-12 text-right font-['Poppins'] text-[14px] text-[#64748B]">
-                      {status.percentage}%
-                    </span>
-
-                  </div>
+                  <span className="font-['Poppins'] text-[14px] font-medium text-[#475569]">
+                    {status.name}
+                  </span>
 
                 </div>
-              );
-            }
-          )}
+
+                <div className="flex items-center gap-5">
+
+                  <span className="font-['Poppins'] text-[14px] font-semibold text-[#334155]">
+                    {status.count}
+                  </span>
+
+                  <span className="w-12 text-right font-['Poppins'] text-[14px] text-[#64748B]">
+                    {status.percentage}%
+                  </span>
+
+                </div>
+
+              </div>
+            );
+          })}
 
         </div>
-
-        {/* Donut Chart */}
 
         <div className="mt-5 flex justify-center">
 
@@ -513,8 +440,6 @@ const MainAnalytics = () => {
 
       <div className="overflow-hidden rounded-xl border border-[#E8EEEE] bg-white xl:col-span-4">
 
-        {/* Header */}
-
         <div className="flex items-center justify-between border-b border-[#E8EEEE] px-5 py-4">
 
           <h2 className="font-['Poppins'] text-[17px] font-semibold text-[#1E293B]">
@@ -530,14 +455,11 @@ const MainAnalytics = () => {
 
         </div>
 
-        {/* Table */}
-
         <div className="w-full overflow-x-auto">
 
           <table className="w-full min-w-162.5">
 
             <thead>
-
               <tr className="border-b border-[#E8EEEE]">
 
                 <th className="px-5 py-3 text-left font-['Poppins'] text-[14px] font-semibold text-[#64748B]">
@@ -561,78 +483,61 @@ const MainAnalytics = () => {
                 </th>
 
               </tr>
-
             </thead>
 
             <tbody>
 
               {recentOrders.length > 0 ? (
-                recentOrders.map(
-                  (order) => (
-                    <tr
-                      key={order.id}
-                      className="border-b border-[#F1F5F9] last:border-0"
-                    >
+                recentOrders.map((order) => (
+                  <tr
+                    key={order.id}
+                    className="border-b border-[#F1F5F9] last:border-0"
+                  >
 
-                      {/* Order ID */}
+                    <td className="px-5 py-4 font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
+                      {order.id}
+                    </td>
 
-                      <td className="px-5 py-4 font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
-                        {order.id}
-                      </td>
+                    <td className="px-3 py-4 font-['Poppins'] text-[14px] text-[#475569]">
+                      {order.customer}
+                    </td>
 
-                      {/* Customer */}
+                    <td className="px-3 py-4 font-['Poppins'] text-[14px] font-semibold text-[#334155]">
+                      $
+                      {Number(
+                        order.amount || 0
+                      ).toFixed(2)}
+                    </td>
 
-                      <td className="px-3 py-4 font-['Poppins'] text-[14px] text-[#475569]">
-                        {order.customer}
-                      </td>
+                    <td className="px-3 py-4">
+                      <StatusBadge
+                        status={order.status}
+                      />
+                    </td>
 
-                      {/* Amount */}
+                    <td className="px-5 py-4 font-['Poppins'] text-[14px] text-[#64748B]">
+                      {new Date(
+                        order.date
+                      ).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        }
+                      )}
+                    </td>
 
-                      <td className="px-3 py-4 font-['Poppins'] text-[14px] font-semibold text-[#334155]">
-                        $
-                        {Number(
-                          order.amount || 0
-                        ).toFixed(2)}
-                      </td>
-
-                      {/* Status */}
-
-                      <td className="px-3 py-4">
-                        <StatusBadge
-                          status={
-                            order.status
-                          }
-                        />
-                      </td>
-
-                      {/* Date */}
-
-                      <td className="px-5 py-4 font-['Poppins'] text-[14px] text-[#64748B]">
-                        {new Date(
-                          order.date
-                        ).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          }
-                        )}
-                      </td>
-
-                    </tr>
-                  )
-                )
+                  </tr>
+                ))
               ) : (
                 <tr>
-
                   <td
                     colSpan={5}
                     className="px-5 py-8 text-center font-['Poppins'] text-[14px] text-[#94A3B8]"
                   >
                     No recent orders found.
                   </td>
-
                 </tr>
               )}
 
