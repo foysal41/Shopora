@@ -22,7 +22,9 @@ import { homePageSingleProduct } from "@/type/homePage";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { addToWishlist, checkWishlist} from "@/lib/api/wishlist";
-import toast from "react-hot-toast";
+
+import { addToCart } from "@/lib/cart";
+import { toast } from "react-toastify";
 
 
 
@@ -154,6 +156,34 @@ const router = useRouter();
     }
   };
 
+
+    /* =========================================================
+     ADD TO cart
+  ========================================================= */
+
+const handleAddToCart = () => {
+  if (!product) {
+    toast.error("Product not found");
+    return;
+  }
+
+  if (product.stockQuantity <= 0) {
+    toast.error("Product is out of stock");
+    return;
+  }
+
+  addToCart({
+    id: product.id,
+    name: product.name,
+    image: product.images?.[0] || null,
+    price: price,
+    quantity: quantity,
+    inStock: product.stockQuantity > 0,
+  });
+
+  toast.success("Added to cart");
+};
+
   /* =========================================================
      LOADING
   ========================================================= */
@@ -167,8 +197,6 @@ const router = useRouter();
       </main>
     );
   }
-
-
 
   
 
@@ -466,6 +494,7 @@ const router = useRouter();
 
               <button
                 type="button"
+                onClick={handleAddToCart}
                 disabled={product.stockQuantity <= 0}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#FF6B6B] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#F45B5B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
               >
