@@ -1,7 +1,24 @@
 import { ArrowUpRight, Heart, ShoppingBag, Star, Tag, Truck } from 'lucide-react'
 import React from 'react'
 
-const StateCardsComponent = () => {
+/* Real stats computed on the dashboard page and passed down. */
+type StateCardsProps = {
+  stats: {
+    totalOrders: number;
+    activeOrders: number;
+    recentOrdersCount: number;
+    wishlistCount: number;
+    couponsCount: number;
+    loyaltyPoints: number;
+    pointsToNextReward: number;
+  };
+  loading?: boolean;
+};
+
+const StateCardsComponent = ({ stats, loading }: StateCardsProps) => {
+  // While the data is loading, show a neutral dash instead of a flash of "0".
+  const show = (value: number) => (loading ? "—" : value);
+
   return (
      <section className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
 
@@ -23,7 +40,7 @@ const StateCardsComponent = () => {
               </p>
 
               <h3 className="mt-1 font-['Poppins'] text-[24px] font-bold text-[#0F172A]">
-                12
+                {show(stats.totalOrders)}
               </h3>
             </div>
 
@@ -31,7 +48,7 @@ const StateCardsComponent = () => {
 
           <p className="mt-3 flex items-center gap-1 font-['Poppins'] text-[14px] font-medium text-[#0F766E]">
             <ArrowUpRight size={15} />
-            2 from last month
+            {stats.recentOrdersCount} in last 30 days
           </p>
 
         </div>
@@ -55,7 +72,7 @@ const StateCardsComponent = () => {
               </p>
 
               <h3 className="mt-1 font-['Poppins'] text-[24px] font-bold text-[#0F172A]">
-                2
+                {show(stats.activeOrders)}
               </h3>
             </div>
 
@@ -86,7 +103,7 @@ const StateCardsComponent = () => {
               </p>
 
               <h3 className="mt-1 font-['Poppins'] text-[24px] font-bold text-[#0F172A]">
-                8
+                {show(stats.wishlistCount)}
               </h3>
             </div>
 
@@ -117,7 +134,7 @@ const StateCardsComponent = () => {
               </p>
 
               <h3 className="mt-1 font-['Poppins'] text-[24px] font-bold text-[#0F172A]">
-                3
+                {show(stats.couponsCount)}
               </h3>
             </div>
 
@@ -148,14 +165,14 @@ const StateCardsComponent = () => {
               </p>
 
               <h3 className="mt-1 font-['Poppins'] text-[24px] font-bold text-[#0F172A]">
-                560
+                {show(stats.loyaltyPoints)}
               </h3>
             </div>
 
           </div>
 
           <p className="mt-3 font-['Poppins'] text-[14px] font-medium text-[#65A844]">
-            Next reward: 940 pts
+            Next reward: {stats.pointsToNextReward} pts
           </p>
 
         </div>
