@@ -372,18 +372,13 @@ const handleCheckout = () => {
                       key={item.id}
                       className="grid grid-cols-1 gap-4 border-b border-[#E5EEEE] px-4 py-5 md:grid-cols-[34px_minmax(220px,1fr)_90px_130px_90px_45px] md:items-center md:gap-3"
                     >
-
                       {/* Checkbox */}
 
                       <div className="flex items-center">
                         <input
                           type="checkbox"
                           checked={isSelected}
-                          onChange={() =>
-                            handleSelectItem(
-                              item.id
-                            )
-                          }
+                          onChange={() => handleSelectItem(item.id)}
                           className="h-4 w-4 cursor-pointer accent-[#0F766E]"
                         />
                       </div>
@@ -391,7 +386,6 @@ const handleCheckout = () => {
                       {/* Product */}
 
                       <div className="flex min-w-0 items-center gap-4">
-
                         <div className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-lg bg-[#F1F5F5]">
                           <Image
                             src={item.image}
@@ -403,26 +397,22 @@ const handleCheckout = () => {
                         </div>
 
                         <div className="min-w-0">
-
-                          <h2 className="truncate text-[14px] font-semibold text-[#1E293B]">
+                          <Link
+                            href={`/products/${item.id}`}
+                            className="block truncate text-[14px] font-semibold text-[#1E293B] transition-colors hover:text-[#0F766E]"
+                          >
                             {item.name}
-                          </h2>
+                          </Link>
 
-                          {(item.brand ||
-                            item.variant) && (
+                          {(item.brand || item.variant) && (
                             <p className="mt-1 text-[14px] text-[#64748B]">
-
                               {item.brand}
 
-                              {item.brand &&
-                                item.variant && (
-                                  <span className="mx-1 text-[#CBD5E1]">
-                                    |
-                                  </span>
-                                )}
+                              {item.brand && item.variant && (
+                                <span className="mx-1 text-[#CBD5E1]">|</span>
+                              )}
 
                               {item.variant}
-
                             </p>
                           )}
 
@@ -431,7 +421,6 @@ const handleCheckout = () => {
                               In Stock
                             </span>
                           )}
-
                         </div>
                       </div>
 
@@ -439,8 +428,7 @@ const handleCheckout = () => {
 
                       <div>
                         <span className="text-[14px] font-semibold text-[#1E293B]">
-                          $
-                          {item.price.toFixed(2)}
+                          ${item.price.toFixed(2)}
                         </span>
                       </div>
 
@@ -448,18 +436,10 @@ const handleCheckout = () => {
 
                       <div>
                         <div className="inline-flex h-9 items-center overflow-hidden rounded-md border border-[#DDE5E5]">
-
                           <button
                             type="button"
-                            onClick={() =>
-                              decreaseQuantity(
-                                item.id
-                              )
-                            }
-                            disabled={
-                              item.quantity <=
-                              1
-                            }
+                            onClick={() => decreaseQuantity(item.id)}
+                            disabled={item.quantity <= 1}
                             className="flex h-9 w-9 items-center justify-center text-[#64748B] transition hover:bg-[#F8FAFA] disabled:cursor-not-allowed disabled:opacity-40"
                           >
                             <Minus size={15} />
@@ -471,16 +451,11 @@ const handleCheckout = () => {
 
                           <button
                             type="button"
-                            onClick={() =>
-                              increaseQuantity(
-                                item.id
-                              )
-                            }
+                            onClick={() => increaseQuantity(item.id)}
                             className="flex h-9 w-9 items-center justify-center text-[#64748B] transition hover:bg-[#F8FAFA]"
                           >
                             <Plus size={15} />
                           </button>
-
                         </div>
                       </div>
 
@@ -488,8 +463,7 @@ const handleCheckout = () => {
 
                       <div>
                         <span className="text-[14px] font-semibold text-[#1E293B]">
-                          $
-                          {itemTotal.toFixed(2)}
+                          ${itemTotal.toFixed(2)}
                         </span>
                       </div>
 
@@ -498,18 +472,13 @@ const handleCheckout = () => {
                       <div>
                         <button
                           type="button"
-                          onClick={() =>
-                            removeItem(
-                              item.id
-                            )
-                          }
+                          onClick={() => removeItem(item.id)}
                           aria-label={`Remove ${item.name}`}
                           className="flex h-9 w-9 items-center justify-center rounded-full border border-[#FFB4B4] text-[#FF6B6B] transition hover:bg-[#FFF3F3]"
                         >
                           <Trash2 size={15} />
                         </button>
                       </div>
-
                     </div>
                   );
                 })}

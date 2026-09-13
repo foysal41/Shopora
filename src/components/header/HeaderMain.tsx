@@ -27,6 +27,7 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 import { apiGet } from "@/lib/core/server";
+import { getWishlist } from "@/lib/api/wishlist";
 
 
 
@@ -59,6 +60,7 @@ const HeaderMain = ({ onMenuOpen,}: HeaderMainProps) => {
   const [searchLoading, setSearchLoading] = useState(false);
 
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistCount, setWishlistCount] = useState(0);
 
   const router = useRouter();
 
@@ -134,6 +136,37 @@ useEffect(() => {
   // Better Auth Session
   const { data: session } = authClient.useSession();
   const user = session?.user;
+
+  useEffect(() => {
+  const updateWishlistCount = async () => {
+    if (!user?.id) {
+      setWishlistCount(0);
+      return;
+    }
+
+    try {
+      const wishlist = await getWishlist(user.id);
+      setWishlistCount(wishlist.length);
+    } catch (error) {
+      console.error("WISHLIST COUNT ERROR:", error);
+      setWishlistCount(0);
+    }
+  };
+
+  updateWishlistCount();
+
+  window.addEventListener(
+    "wishlist-updated",
+    updateWishlistCount
+  );
+
+  return () => {
+    window.removeEventListener(
+      "wishlist-updated",
+      updateWishlistCount
+    );
+  };
+}, [user?.id]);
 
   const dashboardPath =
     user?.role === "Seller"
@@ -287,11 +320,19 @@ useEffect(() => {
               href="/wishlist"
               className="group flex flex-col items-center gap-1"
             >
-              <Heart
-                size={22}
-                strokeWidth={1.6}
-                className="text-[#475569] transition-colors group-hover:text-[#0F766E]"
-              />
+              <div className="relative">
+                <Heart
+                  size={22}
+                  strokeWidth={1.6}
+                  className="text-[#475569] transition-colors group-hover:text-[#0F766E]"
+                />
+
+                {wishlistCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[11px] font-semibold text-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </div>
 
               <span className="font-['Poppins'] text-[14px] font-medium text-[#475569]">
                 Wishlist
@@ -616,9 +657,15 @@ useEffect(() => {
             <Link
               href="/wishlist"
               aria-label="Wishlist"
-              className="text-[#475569]"
+              className="relative text-[#475569]"
             >
               <Heart size={20} strokeWidth={1.7} />
+
+              {wishlistCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[7px] font-semibold text-white">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             {/* Cart */}
