@@ -145,6 +145,7 @@ const router = useRouter();
       setWishlistLoading(true);
       await addToWishlist(userId, productId);
       setIsWishlisted(true);
+      window.dispatchEvent(new Event("wishlist-updated"));
       toast.success("Added to your wishlist");
     } catch (err) {
       console.error("ADD TO WISHLIST ERROR:", err);
@@ -182,6 +183,9 @@ const handleAddToCart = () => {
   });
 
   toast.success("Added to cart");
+
+  // Refresh the current product page
+  window.location.reload();
 };
 
   /* =========================================================

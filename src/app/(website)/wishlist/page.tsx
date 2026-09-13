@@ -68,9 +68,10 @@ const WishlistPage = () => {
 
       await removeFromWishlist(userId, productId);
 
-      setWishlistItems((prev) =>
-        prev.filter((item) => item.id !== productId)
-      );
+      setWishlistItems((prev) => prev.filter((item) => item.id !== productId));
+
+      // Notify Header about wishlist change
+      window.dispatchEvent(new Event("wishlist-updated"));
     } catch (error) {
       console.error("REMOVE WISHLIST ERROR:", error);
     } finally {
@@ -83,24 +84,28 @@ const WishlistPage = () => {
   ========================================================= */
 
   const handleClearAll = async () => {
-    if (!userId || wishlistItems.length === 0) return;
+  if (!userId || wishlistItems.length === 0) return;
 
-    try {
-      setIsClearing(true);
+  try {
+    setIsClearing(true);
 
-      await Promise.all(
-        wishlistItems.map((item) =>
-          removeFromWishlist(userId, item.id)
-        )
-      );
+    await Promise.all(
+      wishlistItems.map((item) =>
+        removeFromWishlist(userId, item.id)
+      )
+    );
 
-      setWishlistItems([]);
-    } catch (error) {
-      console.error("CLEAR WISHLIST ERROR:", error);
-    } finally {
-      setIsClearing(false);
-    }
-  };
+    // Clear wishlist from current UI
+    setWishlistItems([]);
+
+    // Notify Header about wishlist change
+    window.dispatchEvent(new Event("wishlist-updated"));
+  } catch (error) {
+    console.error("CLEAR WISHLIST ERROR:", error);
+  } finally {
+    setIsClearing(false);
+  }
+};
 
   /* =========================================================
      ADD TO CART
