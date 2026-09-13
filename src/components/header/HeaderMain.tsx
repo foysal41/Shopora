@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -58,7 +58,45 @@ const HeaderMain = ({ onMenuOpen,}: HeaderMainProps) => {
   const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
   const [searchLoading, setSearchLoading] = useState(false);
 
+  const [cartCount, setCartCount] = useState(0);
+
   const router = useRouter();
+
+ useEffect(() => {
+  const updateCartCount = () => {
+    const savedCart = localStorage.getItem("shopora-cart");
+
+    if (!savedCart) {
+      setCartCount(0);
+      return;
+    }
+
+    try {
+      const cart = JSON.parse(savedCart);
+
+      const totalQuantity = cart.reduce(
+        (total: number, item: { quantity: number }) =>
+          total + item.quantity,
+        0,
+      );
+
+      setCartCount(totalQuantity);
+    } catch (error) {
+      console.error("CART COUNT ERROR:", error);
+      setCartCount(0);
+    }
+  };
+
+  // Initial count
+  updateCartCount();
+
+  // Listen for cart changes
+  window.addEventListener("cart-updated", updateCartCount);
+
+  return () => {
+    window.removeEventListener("cart-updated", updateCartCount);
+  };
+}, []); 
 
 useEffect(() => {
   const query = search.trim();
@@ -272,9 +310,11 @@ useEffect(() => {
                   className="text-[#475569] transition-colors group-hover:text-[#0F766E]"
                 />
 
-                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[11px] font-semibold text-white">
-                  3
-                </span>
+                {cartCount > 0 && (
+                  <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[11px] font-semibold text-white">
+                    {cartCount}
+                  </span>
+                )}
               </div>
 
               <span className="font-['Poppins'] text-[14px] font-medium text-[#475569]">
@@ -589,9 +629,11 @@ useEffect(() => {
             >
               <ShoppingCart size={20} strokeWidth={1.7} />
 
-              <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[7px] font-semibold text-white">
-                3
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#FF6B6B] font-['Poppins'] text-[7px] font-semibold text-white">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* =================================================
@@ -841,8 +883,6 @@ useEffect(() => {
             </button>
           </form>
         </div>
-
-
       </div>
     </>
   );

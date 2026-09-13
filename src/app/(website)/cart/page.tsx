@@ -75,17 +75,20 @@ useEffect(() => {
   ========================================================= */
 
   useEffect(() => {
-    if (!isHydrated) return;
+  if (!isHydrated) return;
 
-    try {
-      localStorage.setItem(
-        "shopora-cart",
-        JSON.stringify(cartItems)
-      );
-    } catch (error) {
-      console.error("FAILED TO SAVE CART:", error);
-    }
-  }, [cartItems, isHydrated]);
+  try {
+    localStorage.setItem(
+      "shopora-cart",
+      JSON.stringify(cartItems)
+    );
+
+    // Notify Header that cart has changed
+    window.dispatchEvent(new Event("cart-updated"));
+  } catch (error) {
+    console.error("FAILED TO SAVE CART:", error);
+  }
+}, [cartItems, isHydrated]);
 
   /* =========================================================
      SELECT ALL
@@ -195,13 +198,15 @@ useEffect(() => {
      CLEAR CART
   ========================================================= */
 
-  const clearCart = () => {
-    setCartItems([]);
-    setSelectedItems([]);
+ const clearCart = () => {
+  setCartItems([]);
+  setSelectedItems([]);
 
-    localStorage.removeItem("shopora-cart");
-  };
+  localStorage.removeItem("shopora-cart");
 
+  // Notify Header
+  window.dispatchEvent(new Event("cart-updated"));
+};
   /* =========================================================
      SUBTOTAL
   ========================================================= */
