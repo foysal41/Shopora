@@ -370,7 +370,7 @@ const handleAddToCart = () => {
 
             {/* Product Name */}
 
-            <h1 className="font-['Poppins'] text-3xl font-semibold leading-tight text-[#1E293B] sm:text-4xl">
+            <h1 className="font-['Poppins'] text-2xl font-semibold leading-tight text-[#1E293B] md:text-3xl">
               {product.name}
             </h1>
 

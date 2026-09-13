@@ -16,14 +16,7 @@ const shopLinks = [
     label: "New Arrivals",
     href: "/new-arrivals",
   },
-  {
-    label: "Top Rated",
-    href: "/top-rated",
-  },
-  {
-    label: "Best Sellers",
-    href: "/best-sellers",
-  },
+
 ];
 
 const customerLinks = [

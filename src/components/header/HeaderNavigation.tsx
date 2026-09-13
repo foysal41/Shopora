@@ -26,27 +26,27 @@ interface HeaderNavigationProps {
 const categories = [
   {
     label: "Electronics",
-    href: "/shop?category=electronics",
+    href: "/categories/7c6343ae-a367-4f7d-bb7c-ef0d325cfb74",
   },
   {
     label: "Fashion",
-    href: "/shop?category=fashion",
+    href: "/categories/79026330-827d-4e70-b55b-5d914e968487",
   },
   {
     label: "Home & Living",
-    href: "/shop?category=home-living",
+    href: "/categories/f28ae5d5-b5c1-4f97-bc3a-3dfc1813c5aa",
   },
   {
     label: "Beauty & Personal Care",
-    href: "/shop?category=beauty-personal-care",
+    href: "/categories/57fa7850-0a3a-4320-b9db-f67a42174554",
   },
   {
     label: "Sports & Outdoors",
-    href: "/shop?category=sports-outdoors",
+    href: "/categories/94fa855a-8813-4a37-bd3d-06ac68b308f3",
   },
   {
     label: "Baby & Toys",
-    href: "/shop?category=baby-toys",
+    href: "/categories/3fa579fb-1de0-416e-b01c-1a68aa2dee5d",
   },
 ];
 
