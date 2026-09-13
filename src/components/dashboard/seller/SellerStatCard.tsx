@@ -14,21 +14,35 @@ import {
   SellerDashboardStats,
 } from "@/lib/api/sellerDashboard";
 
+type SellerStatCardProps = {
+  startDate: string;
+  endDate: string;
+};
 
-
-const SellerStatCard = () => {
+const SellerStatCard = ({
+  startDate,
+  endDate,
+}: SellerStatCardProps) => {
   const [dashboardStats, setDashboardStats] =
     useState<SellerDashboardStats | null>(null);
+
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        // Temporary seller ID for testing
+        setLoading(true);
+
+        // Seller ID
         const sellerId =
           "k5iblU2uXpHoW1UwgSix98cnkdEboJmv";
 
         const data =
-          await getSellerDashboardStats(sellerId);
+          await getSellerDashboardStats(
+            sellerId,
+            startDate,
+            endDate
+          );
 
         console.log(
           "SELLER DASHBOARD DATA:",
@@ -41,19 +55,27 @@ const SellerStatCard = () => {
           "SELLER DASHBOARD ERROR:",
           error
         );
+
+        setDashboardStats(null);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDashboardStats();
-  }, []);
+  }, [startDate, endDate]);
 
   const stats = [
     {
       title: "Total Sales",
-      value: dashboardStats
+      value: loading
+        ? "—"
+        : dashboardStats
         ? `$${dashboardStats.totalSales.toLocaleString()}`
         : "—",
-      growth: dashboardStats
+      growth: loading
+        ? "—"
+        : dashboardStats
         ? `${dashboardStats.growth.sales}%`
         : "—",
       icon: (
@@ -68,10 +90,14 @@ const SellerStatCard = () => {
 
     {
       title: "Total Orders",
-      value: dashboardStats
+      value: loading
+        ? "—"
+        : dashboardStats
         ? dashboardStats.totalOrders.toLocaleString()
         : "—",
-      growth: dashboardStats
+      growth: loading
+        ? "—"
+        : dashboardStats
         ? `${dashboardStats.growth.orders}%`
         : "—",
       icon: <ShoppingCart size={24} />,
@@ -82,10 +108,14 @@ const SellerStatCard = () => {
 
     {
       title: "Products Sold",
-      value: dashboardStats
+      value: loading
+        ? "—"
+        : dashboardStats
         ? dashboardStats.productsSold.toLocaleString()
         : "—",
-      growth: dashboardStats
+      growth: loading
+        ? "—"
+        : dashboardStats
         ? `${dashboardStats.growth.productsSold}%`
         : "—",
       icon: <Package size={24} />,
@@ -96,10 +126,14 @@ const SellerStatCard = () => {
 
     {
       title: "Total Earnings",
-      value: dashboardStats
+      value: loading
+        ? "—"
+        : dashboardStats
         ? `$${dashboardStats.totalEarnings.toLocaleString()}`
         : "—",
-      growth: dashboardStats
+      growth: loading
+        ? "—"
+        : dashboardStats
         ? `${dashboardStats.growth.earnings}%`
         : "—",
       icon: <Wallet size={24} />,
@@ -110,10 +144,14 @@ const SellerStatCard = () => {
 
     {
       title: "Store Views",
-      value: dashboardStats
+      value: loading
+        ? "—"
+        : dashboardStats
         ? dashboardStats.storeViews.toLocaleString()
         : "—",
-      growth: dashboardStats
+      growth: loading
+        ? "—"
+        : dashboardStats
         ? `${dashboardStats.storeViewsGrowth}%`
         : "—",
       icon: <Eye size={24} />,
@@ -157,11 +195,9 @@ const SellerStatCard = () => {
             </span>
 
             <span className="font-['Poppins'] text-[14px] text-[#64748B]">
-              vs last week
+              vs previous period
             </span>
           </div>
-
-          
         </div>
       ))}
     </div>
