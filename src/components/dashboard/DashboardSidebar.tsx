@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/app/lib/auth-client";
@@ -31,12 +31,7 @@ import {
   Home,
 } from "lucide-react";
 import Image from "next/image";
-
-
-
-/* =========================================================
-   TYPES
-========================================================= */
+import { getUnreadCount } from "@/lib/api/notifications";
 
 type UserRole = "Customer" | "Seller" | "Admin";
 
@@ -48,9 +43,6 @@ interface NavItem {
   badgeText?: string;
 }
 
-/* =========================================================
-   CUSTOMER NAVIGATION
-========================================================= */
 
 const customerNavItems: NavItem[] = [
 
@@ -97,8 +89,7 @@ const customerNavItems: NavItem[] = [
   {
     label: "Notifications",
     href: "/dashboard/notifications",
-    icon: Bell,
-    badge: 2,
+    icon: Bell
   },
   {
     label: "Reviews",
@@ -117,9 +108,9 @@ const customerNavItems: NavItem[] = [
   },
 ];
 
-/* =========================================================
-   SELLER NAVIGATION
-========================================================= */
+
+//  SELLER NAVIGATION
+
 
 const sellerNavItems: NavItem[] = [
   {
@@ -161,31 +152,30 @@ const sellerNavItems: NavItem[] = [
   },
 ];
 
-      //Sub Menu
-      const productLinks = [
-        {
-          label: "All Products",
-          href: "/dashboard/seller/products",
-        },
-        {
-          label: "Add New Product",
-          href: "/dashboard/seller/products/add",
-        },
-        {
-          label: "Categories",
-          href: "/dashboard/seller/products/categories",
-        },
-        {
-          label: "Brands",
-          href: "/dashboard/seller/products/brands",
-        },
-      ];
+//Sub Menu
+const productLinks = [
+  {
+    label: "All Products",
+    href: "/dashboard/seller/products",
+  },
+  {
+    label: "Add New Product",
+    href: "/dashboard/seller/products/add",
+  },
+  {
+    label: "Categories",
+    href: "/dashboard/seller/products/categories",
+  },
+  {
+    label: "Brands",
+    href: "/dashboard/seller/products/brands",
+  },
+];
 
 
 
-/* =========================================================
-   ADMIN NAVIGATION
-========================================================= */
+//  ADMIN NAVIGATION
+
 
 const adminNavItems: NavItem[] = [
   {
@@ -253,9 +243,7 @@ const adminNavItems: NavItem[] = [
   },
 ];
 
-/* =========================================================
-   DASHBOARD SIDEBAR
-========================================================= */
+
 
 const DashboardSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -267,11 +255,39 @@ const DashboardSidebar = () => {
 
   const { data: session, isPending } = useSession();
 
-  /* =======================================================
-     USER DATA
-  ======================================================== */
+
 
   const user = session?.user;
+
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    if (!user?.id) {
+      return;
+    }
+
+    const fetchUnread = async () => {
+      try {
+        const count = await getUnreadCount(user.id);
+        setUnreadNotifications(count);
+      } catch (error) {
+        console.error("FETCH UNREAD NOTIFICATIONS ERROR:", error);
+      }
+    };
+
+    fetchUnread();
+
+    window.addEventListener("notifications-updated", fetchUnread);
+
+    const interval = setInterval(fetchUnread, 30000);
+
+    return () => {
+      window.removeEventListener("notifications-updated", fetchUnread);
+      clearInterval(interval);
+    };
+  }, [user?.id]);
+
+  const visibleUnreadNotifications = user?.id ? unreadNotifications : 0;
 
   const userRole: UserRole =
     ((user as { role?: UserRole } | undefined)?.role as UserRole) ??
@@ -295,17 +311,13 @@ const DashboardSidebar = () => {
       : item
   );
 
-  /* =======================================================
-     USER NAME
-  ======================================================== */
+
 
   const userName = user?.name || "John Smith";
 
   const userEmail = user?.email || "john.smith@email.com";
 
-  /* =======================================================
-     USER INITIAL
-  ======================================================== */
+
 
   const userInitials = userName
     .split(" ")
@@ -314,9 +326,7 @@ const DashboardSidebar = () => {
     .slice(0, 2)
     .toUpperCase();
 
-  /* =======================================================
-     ACTIVE LINK
-  ======================================================== */
+
 
   const isActive = (href: string) => {
     if (
@@ -330,20 +340,15 @@ const DashboardSidebar = () => {
     return pathname.startsWith(href);
   };
 
-  /* =======================================================
-     ROLE LABEL
-  ======================================================== */
+
 
   const roleLabel =
     userRole === "Admin"
       ? "Super Admin"
       : userRole === "Seller"
-      ? "Verified Seller"
-      : "Verified Customer";
+        ? "Verified Seller"
+        : "Verified Customer";
 
-  /* =======================================================
-     LOADING
-  ======================================================== */
 
   if (isPending) {
     return (
@@ -357,17 +362,13 @@ const DashboardSidebar = () => {
     );
   }
 
-  /* =======================================================
-     NAVIGATION CONTENT
-  ======================================================== */
+
 
   const navigationContent = (
     <nav className="px-3 py-4">
       <div className="space-y-1">
         {navItems.map((item) => {
-          // =====================================================
-          // PRODUCTS DROPDOWN
-          // =====================================================
+
 
           if (userRole === "Seller" && item.label === "Products") {
             return (
@@ -376,11 +377,10 @@ const DashboardSidebar = () => {
                 <button
                   type="button"
                   onClick={() => setIsProductsOpen((prev) => !prev)}
-                  className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${
-                    pathname.startsWith("/dashboard/seller/products")
-                      ? "bg-[#E8F5F3] text-[#0F766E]"
-                      : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
-                  }`}
+                  className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${pathname.startsWith("/dashboard/seller/products")
+                    ? "bg-[#E8F5F3] text-[#0F766E]"
+                    : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
+                    }`}
                 >
                   <Package size={18} strokeWidth={1.8} />
 
@@ -389,9 +389,8 @@ const DashboardSidebar = () => {
                   <ChevronDown
                     size={16}
                     strokeWidth={1.8}
-                    className={`transition-transform duration-200 ${
-                      isProductsOpen ? "rotate-180" : ""
-                    }`}
+                    className={`transition-transform duration-200 ${isProductsOpen ? "rotate-180" : ""
+                      }`}
                   />
                 </button>
 
@@ -406,11 +405,10 @@ const DashboardSidebar = () => {
                           key={product.href}
                           href={product.href}
                           onClick={() => setIsOpen(false)}
-                          className={`block rounded-md px-3 py-2 font-['Poppins'] text-[14px] font-medium transition-colors duration-200 ${
-                            active
-                              ? "bg-[#E8F5F3] text-[#0F766E]"
-                              : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
-                          }`}
+                          className={`block rounded-md px-3 py-2 font-['Poppins'] text-[14px] font-medium transition-colors duration-200 ${active
+                            ? "bg-[#E8F5F3] text-[#0F766E]"
+                            : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
+                            }`}
                         >
                           {product.label}
                         </Link>
@@ -422,9 +420,7 @@ const DashboardSidebar = () => {
             );
           }
 
-          // =====================================================
-          // OTHER NAVIGATION ITEMS
-          // =====================================================
+
 
           const Icon = item.icon;
           const active = isActive(item.href);
@@ -434,29 +430,36 @@ const DashboardSidebar = () => {
               key={item.label}
               href={item.href}
               onClick={() => setIsOpen(false)}
-              className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${
-                active
-                  ? "bg-[#E8F5F3] text-[#0F766E]"
-                  : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
-              }`}
+              className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${active
+                ? "bg-[#E8F5F3] text-[#0F766E]"
+                : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
+                }`}
             >
               <Icon
                 size={18}
                 strokeWidth={1.7}
-                className={`shrink-0 transition-colors ${
-                  active
-                    ? "text-[#0F766E]"
-                    : "text-[#64748B] group-hover:text-[#0F766E]"
-                }`}
+                className={`shrink-0 transition-colors ${active
+                  ? "text-[#0F766E]"
+                  : "text-[#64748B] group-hover:text-[#0F766E]"
+                  }`}
               />
 
               <span className="flex-1">{item.label}</span>
 
               {/* Number Badge */}
-              {item.badge && (
-                <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6B6B] px-1.5 font-['Poppins'] text-[14px] font-semibold text-white">
-                  {item.badge}
-                </span>
+
+              {item.label === "Notifications" ? (
+                visibleUnreadNotifications > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6B6B] px-1.5 font-['Poppins'] text-[14px] font-semibold text-white">
+                    {visibleUnreadNotifications}
+                  </span>
+                )
+              ) : (
+                item.badge && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF6B6B] px-1.5 font-['Poppins'] text-[14px] font-semibold text-white">
+                    {item.badge}
+                  </span>
+                )
               )}
 
               {/* New Badge */}
@@ -474,9 +477,9 @@ const DashboardSidebar = () => {
 
   return (
     <>
-      {/* =====================================================
-          MOBILE MENU BUTTON
-      ====================================================== */}
+
+      {/* MOBILE MENU BUTTON */}
+
 
       <div className="w-full border-b border-[#E8EEEE] bg-white lg:hidden">
         <button
@@ -490,9 +493,7 @@ const DashboardSidebar = () => {
         </button>
       </div>
 
-      {/* =====================================================
-          MOBILE OVERLAY
-      ====================================================== */}
+
 
       {isOpen && (
         <div
@@ -501,18 +502,13 @@ const DashboardSidebar = () => {
         />
       )}
 
-      {/* =====================================================
-          SIDEBAR
-      ====================================================== */}
+
 
       <aside
-        className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-[#E8EEEE] bg-white transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-64 lg:translate-x-0`}
+        className={`fixed left-0 top-0 z-50 h-screen w-72 border-r border-[#E8EEEE] bg-white transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full"
+          } lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-64 lg:translate-x-0`}
       >
-        {/* ===================================================
-            MOBILE CLOSE BUTTON
-        ==================================================== */}
+
 
         <div className="flex items-center justify-end border-b border-[#E8EEEE] px-4 py-3 lg:hidden">
           <button
@@ -524,9 +520,9 @@ const DashboardSidebar = () => {
           </button>
         </div>
 
-        {/* ===================================================
-            USER PROFILE
-        ==================================================== */}
+
+        {/* USER PROFILE */}
+
 
         <div className="border-b border-[#E8EEEE] px-4 py-4">
           <div className="flex items-center gap-3">
@@ -564,17 +560,13 @@ const DashboardSidebar = () => {
           </div>
         </div>
 
-        {/* ===================================================
-            NAVIGATION
-        ==================================================== */}
+
 
         <div className="h-[calc(100vh-235px)] overflow-y-auto">
           {navigationContent}
         </div>
 
-        {/* ===================================================
-            SELLER AI ASSISTANT
-        ==================================================== */}
+
 
         {userRole === "Seller" && (
           <div className="border-t border-[#E8EEEE] p-3">
@@ -608,9 +600,7 @@ const DashboardSidebar = () => {
           </div>
         )}
 
-        {/* ===================================================
-            ADMIN / CUSTOMER / SELLER SETTINGS + LOGOUT
-        ==================================================== */}
+
 
         <div className="border-t border-[#E8EEEE] bg-white px-3 py-3">
           {userRole !== "Customer" && (
