@@ -608,7 +608,7 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
                         await authClient.signOut();
                         setAccountOpen(false);
                       }}
-                      className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm font-medium text-[#FF6B6B] transition-colors hover:bg-[#FFF1F1]"
+                      className="mt-1 cursor-pointer flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm font-medium text-[#FF6B6B] transition-colors hover:bg-[#FFF1F1]"
                     >
                       <LogOut
                         size={19}
@@ -867,7 +867,7 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
                         await authClient.signOut();
                         setAccountOpen(false);
                       }}
-                      className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm font-medium text-[#FF6B6B] hover:bg-[#FFF1F1]"
+                      className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm font-medium text-[#FF6B6B] hover:bg-[#FFF1F1]"
                     >
                       <LogOut size={18} />
                       Logout
