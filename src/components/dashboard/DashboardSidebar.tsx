@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useSession } from "@/app/lib/auth-client";
+import { usePathname, useRouter } from "next/navigation";
+import { authClient, useSession } from "@/app/lib/auth-client";
 
 import {
   LayoutDashboard,
@@ -247,8 +247,10 @@ const adminNavItems: NavItem[] = [
 
 const DashboardSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const pathname = usePathname();
+  const router = useRouter();
   const [isProductsOpen, setIsProductsOpen] = useState(
     pathname.startsWith("/dashboard/products")
   );
@@ -342,6 +344,22 @@ const DashboardSidebar = () => {
     }
 
     return pathname.startsWith(href);
+  };
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+
+    setIsLoggingOut(true);
+
+    try {
+      await authClient.signOut();
+      setIsOpen(false);
+      router.replace("/auth/login");
+      router.refresh();
+    } catch (error) {
+      console.error("LOGOUT ERROR:", error);
+      setIsLoggingOut(false);
+    }
   };
 
 
@@ -629,7 +647,9 @@ const DashboardSidebar = () => {
           {/* Logout */}
           <button
             type="button"
-            className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#475569] transition-all hover:bg-[#FFF5F5] hover:text-[#FF6B6B]"
+            onClick={() => void handleLogout()}
+            disabled={isLoggingOut}
+            className="group flex cursor-pointer w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#475569] transition-all hover:bg-[#FFF5F5] hover:text-[#FF6B6B]"
           >
             <LogOut
               size={18}
@@ -637,7 +657,7 @@ const DashboardSidebar = () => {
               className="text-[#64748B] group-hover:text-[#FF6B6B]"
             />
 
-            <span>Logout</span>
+            <span>{isLoggingOut ? "Logging out..." : "Logout"}</span>
           </button>
         </div>
       </aside>
