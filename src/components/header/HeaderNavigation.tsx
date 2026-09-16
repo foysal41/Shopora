@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ChevronDown,
   ChevronRight,
@@ -19,9 +20,7 @@ interface HeaderNavigationProps {
   onMobileCategoryClose: () => void;
 }
 
-/* =====================================================
-   CATEGORIES
-===================================================== */
+
 
 const categories = [
   {
@@ -50,9 +49,7 @@ const categories = [
   },
 ];
 
-/* =====================================================
-   MAIN NAVIGATION
-===================================================== */
+
 
 const navLinks = [
   {
@@ -81,9 +78,7 @@ const navLinks = [
   },
 ];
 
-/* =====================================================
-   EXTRA LINKS
-===================================================== */
+
 
 const extraLinks = [
   {
@@ -98,9 +93,7 @@ const extraLinks = [
   },
 ];
 
-/* =====================================================
-   COMPONENT
-===================================================== */
+
 
 const HeaderNavigation = ({
   categoryOpen,
@@ -109,18 +102,19 @@ const HeaderNavigation = ({
   onMobileMenuClose,
   onMobileCategoryClose,
 }: HeaderNavigationProps) => {
+  const pathname = usePathname();
+
+  const isActiveLink = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
     <>
-      {/* =====================================================
-          DESKTOP NAVIGATION
-      ====================================================== */}
+      
 
       <div className="hidden border-b border-[#E8EEEE] lg:block">
         <div className="mx-auto flex h-12 max-w-7xl items-center px-4">
 
-          {/* =================================================
-              CATEGORIES
-          ================================================= */}
+         
 
           <div className="relative h-full w-43.75 shrink-0">
 
@@ -171,18 +165,19 @@ const HeaderNavigation = ({
             )}
           </div>
 
-          {/* =================================================
-              DESKTOP NAV LINKS
-          ================================================= */}
+       
 
           <nav className="flex h-full items-center gap-8">
 
-            {navLinks.map((link, index) => (
+            {navLinks.map((link) => {
+              const isActive = isActiveLink(link.href);
+
+              return (
               <Link
                 key={link.label}
                 href={link.href}
                 className={`relative flex h-full items-center font-['Poppins'] text-[16px] font-medium transition-colors duration-300 ${
-                  index === 0
+                  isActive
                     ? "text-[#0F766E]"
                     : "text-[#475569] hover:text-[#0F766E]"
                 }`}
@@ -191,28 +186,26 @@ const HeaderNavigation = ({
 
                 {/* Active underline */}
 
-                {index === 0 && (
+                {isActive && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-[#0F766E]" />
                 )}
               </Link>
-            ))}
+              );
+            })}
 
           </nav>
         </div>
       </div>
 
-      {/* =====================================================
-          MOBILE QUICK NAVIGATION
-      ====================================================== */}
 
       <div className="flex items-center justify-between overflow-x-auto border-b border-[#E8EEEE] px-4 py-2.5 lg:hidden">
 
-        {navLinks.slice(0, 5).map((link, index) => (
+        {navLinks.slice(0, 5).map((link) => (
           <Link
             key={link.label}
             href={link.href}
             className={`whitespace-nowrap px-2 font-['Poppins'] text-[12px] font-medium ${
-              index === 0
+              isActiveLink(link.href)
                 ? "text-[#0F766E]"
                 : "text-[#64748B]"
             }`}
@@ -223,9 +216,7 @@ const HeaderNavigation = ({
 
       </div>
 
-      {/* =====================================================
-          MOBILE SIDE MENU
-      ====================================================== */}
+     
 
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-60 lg:hidden">
@@ -243,9 +234,7 @@ const HeaderNavigation = ({
 
           <aside className="relative h-full w-70 overflow-y-auto bg-white shadow-xl">
 
-            {/* =================================================
-                DRAWER HEADER
-            ================================================= */}
+            
 
             <div className="flex h-16 items-center justify-between border-b border-[#E8EEEE] px-5">
 
@@ -280,15 +269,9 @@ const HeaderNavigation = ({
 
             </div>
 
-            {/* =================================================
-                DRAWER CONTENT
-            ================================================= */}
 
             <div className="px-5 py-5">
 
-              {/* =================================================
-                  CATEGORIES
-              ================================================= */}
 
               <div className="mb-4">
 
@@ -341,19 +324,17 @@ const HeaderNavigation = ({
 
               </div>
 
-              {/* =================================================
-                  MAIN LINKS
-              ================================================= */}
+              
 
               <nav className="space-y-1">
 
-                {navLinks.map((link, index) => (
+                {navLinks.map((link) => (
                   <Link
                     key={link.label}
                     href={link.href}
                     onClick={onMobileMenuClose}
                     className={`flex w-full items-center rounded-lg px-4 py-3 text-left font-['Poppins'] text-xs font-medium transition-colors ${
-                      index === 0
+                      isActiveLink(link.href)
                         ? "bg-[#F6FAF9] text-[#0F766E]"
                         : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
                     }`}
@@ -368,9 +349,7 @@ const HeaderNavigation = ({
 
               <div className="my-5 border-t border-[#E8EEEE]" />
 
-              {/* =================================================
-                  EXTRA LINKS
-              ================================================= */}
+          
 
               <div className="space-y-1">
 

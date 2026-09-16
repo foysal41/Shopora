@@ -329,6 +329,10 @@ const DashboardSidebar = () => {
 
 
   const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
     if (
       href === "/dashboard/customer" ||
       href === "/dashboard/seller" ||
