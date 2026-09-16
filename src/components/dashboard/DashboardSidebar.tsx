@@ -78,7 +78,7 @@ const customerNavItems: NavItem[] = [
   },
   {
     label: "Payment Methods",
-    href: "/dashboard/payment-methods",
+    href: "/dashboard/customer/payment-methods",
     icon: CreditCard,
   },
   {
