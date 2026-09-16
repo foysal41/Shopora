@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   CreditCard,
   Plus,
@@ -78,7 +79,14 @@ const formatLast4 = (value: string) => value.replace(/\D/g, "").slice(0, 4);
 
 const getCurrentSessionToken = async (): Promise<string> => {
   try {
-    const response = (await authClient.getSession()) as any;
+    const response = (await authClient.getSession()) as {
+      data?: {
+        session?: { token?: string };
+        token?: string;
+        accessToken?: string;
+        access_token?: string;
+      };
+    };
     const sessionData = response?.data;
     const token =
       sessionData?.session?.token ||
@@ -97,7 +105,11 @@ const getCurrentSessionToken = async (): Promise<string> => {
   }
 };
 
-async function paymentRequest(path: string, options: RequestInit = {}) {
+async function paymentRequest(
+  path: string,
+  options: RequestInit = {},
+  onUnauthorized?: () => void
+) {
   const token = await getCurrentSessionToken();
   const requestHeaders = new Headers(options.headers || {});
 
@@ -116,7 +128,7 @@ async function paymentRequest(path: string, options: RequestInit = {}) {
 
   if (!response.ok) {
     if (response.status === 401) {
-      window.location.href = "/auth/login";
+      onUnauthorized?.();
     }
 
     throw new Error(result?.message || "Payment request failed");
@@ -126,6 +138,7 @@ async function paymentRequest(path: string, options: RequestInit = {}) {
 }
 
 const PaymentMethodsPage = () => {
+  const router = useRouter();
   const { data: session } = useSession();
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
@@ -139,7 +152,7 @@ const PaymentMethodsPage = () => {
   const loadMethods = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await paymentRequest("");
+      const result = await paymentRequest("", {}, () => router.push("/auth/login"));
       setMethods(Array.isArray(result?.data) ? result.data : []);
     } catch (error) {
       console.error("LOAD PAYMENT METHODS ERROR:", error);
@@ -150,15 +163,18 @@ const PaymentMethodsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (!session?.user) {
-      setLoading(false);
       return;
     }
 
-    void loadMethods();
+    const timeoutId = window.setTimeout(() => {
+      void loadMethods();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, [session?.user, loadMethods]);
 
   const openAdd = () => {
@@ -411,7 +427,7 @@ const PaymentMethodsPage = () => {
           {methods.map((method) => (
             <div
               key={method.id}
-              className="relative rounded-2xl border border-[#E8EEEE] bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F766E] p-5 text-white shadow-sm"
+              className="relative rounded-2xl border border-[#E8EEEE] bg-linear-to-br from-[#0F172A] via-[#1E293B] to-[#0F766E] p-5 text-white shadow-sm"
             >
               <div className="mb-6 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
