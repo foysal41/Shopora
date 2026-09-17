@@ -26,6 +26,7 @@ import {
   Warehouse,
   Bot,
   FileBarChart,
+  ShieldCheck,
   ChevronRight,
   ChevronDown,
   Home,
@@ -194,10 +195,9 @@ const adminNavItems: NavItem[] = [
     icon: Grid2X2,
   },
   {
-    label: "Orders",
-    href: "/dashboard/admin/orders",
+    label: "Catalog Health",
+    href: "/dashboard/admin/catalog-health",
     icon: ShoppingBag,
-    badge: 12,
   },
   {
     label: "Customers",
@@ -205,9 +205,9 @@ const adminNavItems: NavItem[] = [
     icon: Users,
   },
   {
-    label: "Inventory",
-    href: "/dashboard/admin/inventory",
-    icon: Warehouse,
+    label: "Product Moderation",
+    href: "/dashboard/admin/moderation",
+    icon: ShieldCheck,
   },
   {
     label: "Coupons",
@@ -215,9 +215,9 @@ const adminNavItems: NavItem[] = [
     icon: Ticket,
   },
   {
-    label: "Reviews",
-    href: "/dashboard/admin/reviews",
-    icon: Star,
+    label: "Customer Support",
+    href: "/dashboard/support",
+    icon: Headphones,
   },
   {
     label: "AI Tools",
@@ -237,7 +237,7 @@ const adminNavItems: NavItem[] = [
     badge: 5,
   },
   {
-    label: "Settings",
+    label: "Account Settings",
     href: "/dashboard/admin/settings",
     icon: Settings,
   },
@@ -625,24 +625,6 @@ const DashboardSidebar = () => {
 
 
         <div className="border-t border-[#E8EEEE] bg-white px-3 py-3">
-          {userRole !== "Customer" && (
-            <Link
-              href={
-                userRole === "Seller"
-                  ? "/dashboard/seller/settings"
-                  : "/dashboard/admin/settings"
-              }
-              onClick={() => setIsOpen(false)}
-              className="group mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#475569] transition-all hover:bg-[#F6FAF9] hover:text-[#0F766E]"
-            >
-              <Settings
-                size={18}
-                strokeWidth={1.7}
-                className="text-[#64748B] group-hover:text-[#0F766E]"
-              />
-              Settings
-            </Link>
-          )}
 
           {/* Logout */}
           <button

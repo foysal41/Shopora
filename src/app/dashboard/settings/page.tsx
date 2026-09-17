@@ -338,7 +338,7 @@ const AccountSettingsPage = () => {
               </div>
 
               {/* Member since (read-only) */}
-              {memberSince && (
+              {user.role=== "Customer"|| user.role=== "Seller" && memberSince && (
                 <div className="flex items-center gap-2 rounded-lg bg-[#F8FAFC] px-3 py-2.5 text-[13px] text-[#64748B]">
                   <CalendarDays size={15} className="text-[#94A3B8]" />
                   Member since {memberSince}
