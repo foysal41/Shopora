@@ -169,7 +169,11 @@ export const apiGet = async <T>(
 
 
 
-export const apiPatch = async<T>(endPoint: string, body: unknown):Promise<T> => {
+export const apiPatch = async<T>(
+  endPoint: string,
+  body: unknown,
+  options?: { headers?: HeadersInit },
+):Promise<T> => {
 
   //  console.log("PATCH 1 - Endpoint:", endPoint);
   // console.log("PATCH 1 - Request Body:", body);
@@ -180,6 +184,7 @@ export const apiPatch = async<T>(endPoint: string, body: unknown):Promise<T> => 
     credentials: "include",
     headers: {
       "Content-Type" : "application/json",
+      ...options?.headers,
     },
     body: JSON.stringify(body),
     cache: "no-store",
