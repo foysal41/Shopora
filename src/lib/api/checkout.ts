@@ -3,10 +3,17 @@ import { apiPost } from "@/lib/core/server";
 import { apiGet } from "@/lib/core/server";
 
 export type MyOrderItem = {
+  productId?: string;
   productName: string;
   productImage: string | null;
   quantity: number;
   price: number;
+  review?: {
+    id: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+  } | null;
 };
 
 export type MyOrder = {
@@ -18,12 +25,17 @@ export type MyOrder = {
   items: MyOrderItem[];
 };
 
-export const getMyOrders = async (customerId: string) => {
+export const getMyOrders = async (
+  customerId: string,
+  sessionToken?: string,
+) => {
   const response = await apiGet<{
     success: boolean;
     message: string;
     data: MyOrder[];
-  }>(`/api/v1/orders?customerId=${customerId}`);
+  }>(`/api/v1/orders?customerId=${customerId}`, sessionToken
+    ? { headers: { Authorization: `Bearer ${sessionToken}` } }
+    : undefined);
 
   return response.data;
 };

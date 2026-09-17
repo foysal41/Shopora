@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
-  ChevronDown,
   ChevronRight,
   Heart,
   MapPin,
@@ -24,7 +23,14 @@ import { useSession } from "@/lib/auth-client";
 import { addToWishlist, checkWishlist} from "@/lib/api/wishlist";
 
 import { addToCart } from "@/lib/cart";
-import { toast } from "react-toastify";
+import {
+  deleteReview,
+  getProductReviews,
+  saveReview,
+  type ProductReview,
+} from "@/lib/api/reviews";
+import ReviewDeleteModal from "@/components/ReviewDeleteModal";
+import { toast } from "react-hot-toast";
 
 
 
@@ -46,6 +52,14 @@ const router = useRouter();
 
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [productReviews, setProductReviews] = useState<ProductReview[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewDeleteOpen, setReviewDeleteOpen] = useState(false);
+  const [reviewDeleting, setReviewDeleting] = useState(false);
 
 
 
@@ -104,6 +118,91 @@ const router = useRouter();
       fetchProduct();
     }
   }, [productId]);
+
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchReviews = async () => {
+      try {
+        setReviewsLoading(true);
+        setReviewError("");
+        const loadedReviews = await getProductReviews(productId);
+        setProductReviews(loadedReviews);
+        const ownReview = loadedReviews.find(
+          (review) => review.customerId === userId,
+        );
+        setReviewRating(ownReview?.rating ?? 0);
+        setReviewComment(ownReview?.comment ?? "");
+      } catch (err) {
+        console.error("PRODUCT REVIEWS FETCH ERROR:", err);
+        setReviewError(
+          err instanceof Error ? err.message : "Unable to load reviews",
+        );
+      } finally {
+        setReviewsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [productId, userId]);
+
+  const currentCustomerReview = productReviews.find(
+    (review) => review.customerId === userId,
+  );
+
+  const handleReviewSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!userId) {
+      router.push("/auth/login");
+      return;
+    }
+
+    if (!reviewRating || reviewComment.trim().length < 5) {
+      toast.error("Choose a rating and write at least 5 characters.");
+      return;
+    }
+
+    try {
+      setReviewSubmitting(true);
+      const savedReview = await saveReview({
+        productId,
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+      });
+      setProductReviews((current) => [
+        savedReview,
+        ...current,
+      ]);
+      setReviewRating(0);
+      setReviewComment("");
+      toast.success("Your review has been saved.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to save review.");
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  const handleReviewDelete = async () => {
+    if (!currentCustomerReview) return;
+
+    try {
+      setReviewDeleting(true);
+      await deleteReview(currentCustomerReview.id);
+      setProductReviews((current) =>
+        current.filter((review) => review.id !== currentCustomerReview.id),
+      );
+      setReviewDeleteOpen(false);
+      setReviewRating(0);
+      setReviewComment("");
+      toast.success("Your review has been deleted.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Unable to delete review.");
+    } finally {
+      setReviewDeleting(false);
+    }
+  };
 
 
   /* =========================================================
@@ -417,6 +516,10 @@ const handleAddToCart = () => {
               
               </span>
 
+              <span className="font-['Poppins'] text-sm text-[#64748B]">
+                x {quantity} = <strong className="font-semibold text-[#0F766E]">${(price * quantity).toFixed(2)}</strong>
+              </span>
+
               {hasDiscount && (
                 <>
                   <span className="font-['Poppins'] text-base text-[#94A3B8] line-through">
@@ -679,15 +782,13 @@ const handleAddToCart = () => {
           </div>
         </div>
 
-        {/* =====================================================
-            DESCRIPTION / SPECIFICATION / REVIEWS
-        ===================================================== */}
+        
 
         <div className="mt-8 rounded-xl border border-[#E2E8F0] bg-white">
 
           {/* Tabs */}
 
-          <div className="flex flex-wrap border-b border-[#E2E8F0]">
+          <div className="flex flex-wrap border-b border-[#E2E8F0] ">
 
             {[
               "Description",
@@ -699,7 +800,7 @@ const handleAddToCart = () => {
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-4 font-['Poppins'] text-base font-medium transition-colors ${
+                className={`px-5 py-4 font-['Poppins'] cursor-pointer text-base font-medium transition-colors ${
                   activeTab === tab
                     ? "border-b-2 border-[#0F766E] text-[#0F766E]"
                     : "text-[#64748B] hover:text-[#0F766E]"
@@ -772,33 +873,57 @@ const handleAddToCart = () => {
             )}
 
             {activeTab === `Reviews (${reviews})` && (
-              <div className="flex items-center gap-4">
-
-                <span className="font-['Poppins'] text-4xl font-bold text-[#1E293B]">
-                  {rating.toFixed(1)}
-                </span>
-
-                <div>
-
-                  <div className="flex text-[#FFB020]">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={19}
-                        fill={
-                          star <= Math.round(rating)
-                            ? "currentColor"
-                            : "none"
-                        }
-                      />
-                    ))}
+              <div className="space-y-8">
+                <div className="flex items-center gap-4">
+                  <span className="font-['Poppins'] text-4xl font-bold text-[#1E293B]">{rating.toFixed(1)}</span>
+                  <div>
+                    <div className="flex text-[#FFB020]">
+                      {[1, 2, 3, 4, 5].map((star) => <Star key={star} size={19} fill={star <= Math.round(rating) ? "currentColor" : "none"} />)}
+                    </div>
+                    <p className="mt-1 font-['Poppins'] text-sm text-[#64748B]">Based on {reviews} reviews</p>
                   </div>
-
-                  <p className="mt-1 font-['Poppins'] text-sm text-[#64748B]">
-                    Based on {reviews} reviews
-                  </p>
-
                 </div>
+
+                {currentCustomerReview ? (
+                  <div className="rounded-lg border border-[#E2E8F0] bg-[#FAFCFC] p-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="font-['Poppins'] text-sm text-[#475569]">
+                        You have already reviewed this product. Reviews cannot be edited.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setReviewDeleteOpen(true)}
+                        className="w-fit rounded-lg border border-[#EF4444] px-3 py-2 font-['Poppins'] text-sm font-medium text-[#EF4444] transition hover:bg-[#FFF1F1]"
+                      >
+                        Delete review
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReviewSubmit} className="rounded-lg border border-[#E2E8F0] bg-[#FAFCFC] p-4">
+                    <h3 className="font-['Poppins'] text-base font-semibold text-[#1E293B]">Write a review</h3>
+                    <div className="mt-3 flex items-center gap-1" aria-label="Choose a rating">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button key={star} type="button" aria-label={`${star} star${star > 1 ? "s" : ""}`} onClick={() => setReviewRating(star)} className="text-[#FFB020] cursor-pointer transition-transform hover:scale-110">
+                          <Star size={24} fill={star <= reviewRating ? "currentColor" : "none"} />
+                        </button>
+                      ))}
+                    </div>
+                    <textarea value={reviewComment} onChange={(event) => setReviewComment(event.target.value)} placeholder="Tell other shoppers what you think..." rows={4} className="mt-3 w-full resize-y rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 font-['Poppins'] text-sm text-[#334155] outline-none focus:border-[#0F766E]" />
+                    <div className="mt-3 flex items-center justify-between gap-3">
+                      <p className="font-['Poppins'] text-xs text-[#64748B]">{userId ? "Your review will appear publicly." : "Sign in to leave a review."}</p>
+                      <button type="submit" disabled={reviewSubmitting} className="rounded-lg bg-[#0F766E] px-4 py-2 font-['Poppins'] text-sm font-medium text-white transition hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer">{reviewSubmitting ? "Saving..." : "Save review"}</button>
+                    </div>
+                  </form>
+                )}
+
+                {reviewsLoading ? <p className="font-['Poppins'] text-sm text-[#64748B]">Loading reviews...</p> : reviewError ? <p className="font-['Poppins'] text-sm text-red-500">{reviewError}</p> : productReviews.length === 0 ? <p className="font-['Poppins'] text-sm text-[#64748B]">No reviews yet. Be the first to share your experience.</p> : <div className="space-y-4">{productReviews.map((review) => <article key={review.id} className="border-b border-[#E2E8F0] pb-4 last:border-b-0"><div className="flex items-center justify-between gap-3"><p className="font-['Poppins'] text-sm font-semibold text-[#1E293B]">{review.customerName}</p><time className="font-['Poppins'] text-xs text-[#94A3B8]">{new Date(review.createdAt).toLocaleDateString()}</time></div><div className="mt-1 flex text-[#FFB020]">{[1, 2, 3, 4, 5].map((star) => <Star key={star} size={15} fill={star <= review.rating ? "currentColor" : "none"} />)}</div><p className="mt-2 font-['Poppins'] text-sm leading-6 text-[#475569]">{review.comment}</p></article>)}</div>}
+                <ReviewDeleteModal
+                  isOpen={reviewDeleteOpen}
+                  onClose={() => setReviewDeleteOpen(false)}
+                  onConfirm={handleReviewDelete}
+                  isDeleting={reviewDeleting}
+                />
               </div>
             )}
 

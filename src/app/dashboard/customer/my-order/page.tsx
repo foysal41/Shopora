@@ -4,16 +4,13 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { ChevronRight, Package, Search } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
-import { getMyOrders, type MyOrder } from "@/lib/api/checkout";
+import { getMyOrders } from "@/lib/api/checkout";
 
-/* =========================================================
-   TYPES
-========================================================= */
+
 
 type OrderStatus =
   | "PENDING"
   | "PLACED"
-  | "PAID"
   | "PROCESSING"
   | "PACKED"
   | "SHIPPED"
@@ -37,15 +34,12 @@ interface Order {
   items: OrderItem[];
 }
 
-/* =========================================================
-   STATUS LABELS / STYLES
-========================================================= */
+
 
 const statusOptions: Array<OrderStatus | "All"> = [
   "All",
   "PENDING",
   "PLACED",
-  "PAID",
   "PROCESSING",
   "PACKED",
   "SHIPPED",
@@ -57,7 +51,6 @@ const statusOptions: Array<OrderStatus | "All"> = [
 const statusLabel: Record<OrderStatus, string> = {
   PENDING: "Pending",
   PLACED: "Placed",
-  PAID: "Paid",
   PROCESSING: "Processing",
   PACKED: "Packed",
   SHIPPED: "Shipped",
@@ -71,9 +64,7 @@ const getStatusClass = (status: OrderStatus) => {
     return "bg-[#EAF7E7] text-[#4D9A38]";
   }
 
-  if (status === "PROCESSING" || status === "PAID") {
-    return "bg-[#EAF3FF] text-[#2563EB]";
-  }
+  
 
   if (status === "CANCELLED" || status === "REFUNDED") {
     return "bg-[#F1F2F4] text-[#64748B]";
@@ -83,13 +74,12 @@ const getStatusClass = (status: OrderStatus) => {
   return "bg-[#FFF3E8] text-[#F97316]";
 };
 
-/* =========================================================
-   MY ORDERS PAGE (DYNAMIC)
-========================================================= */
+
 
 const MyOrdersPage = () => {
-  const { data: session } = useSession();
+  const { data: session, isPending } = useSession();
   const customerId = session?.user?.id;
+  const sessionToken = session?.session?.token;
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,13 +92,16 @@ const MyOrdersPage = () => {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!customerId) return;
+      if (!customerId || !sessionToken) {
+        if (!isPending) setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
         setFetchError("");
 
-        const data = await getMyOrders(customerId);
+        const data = await getMyOrders(customerId, sessionToken);
         setOrders(data as unknown as Order[]);
       } catch (err) {
         console.error("MY ORDERS FETCH ERROR:", err);
@@ -121,7 +114,7 @@ const MyOrdersPage = () => {
     };
 
     fetchOrders();
-  }, [customerId]);
+  }, [customerId, isPending, sessionToken]);
 
   const filteredOrders = orders.filter((order) => {
     const matchesStatus =
@@ -170,7 +163,7 @@ const MyOrdersPage = () => {
             key={status}
             type="button"
             onClick={() => setStatusFilter(status)}
-            className={`rounded-full px-4 py-2 font-['Poppins'] text-[14px] font-medium transition-colors ${
+            className={`cursor-pointer rounded-full px-4 py-2 font-['Poppins'] text-[14px] font-medium transition-colors ${
               statusFilter === status
                 ? "bg-[#0F766E] text-white"
                 : "bg-white text-[#475569] border border-[#E8EEEE] hover:bg-[#F6FAF9] hover:text-[#0F766E]"

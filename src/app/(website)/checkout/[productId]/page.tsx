@@ -471,21 +471,27 @@ useEffect(() => {
   ========================================================= */
 
   const getOrderItems = () => {
-    if (fromCart) {
-      return checkoutItems.map(
-        (item) => ({
+    const items = fromCart
+      ? checkoutItems.map((item) => ({
           productId: item.id,
           quantity: item.quantity,
-        })
+        }))
+      : [{ productId, quantity }];
+
+    const mergedItems = new Map<string, number>();
+
+    for (const item of items) {
+      if (!item.productId || item.quantity <= 0) continue;
+      mergedItems.set(
+        item.productId,
+        (mergedItems.get(item.productId) ?? 0) + item.quantity,
       );
     }
 
-    return [
-      {
-        productId,
-        quantity,
-      },
-    ];
+    return Array.from(mergedItems, ([mergedProductId, mergedQuantity]) => ({
+      productId: mergedProductId,
+      quantity: mergedQuantity,
+    }));
   };
 
   /* =========================================================
