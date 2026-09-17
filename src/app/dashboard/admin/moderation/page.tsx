@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Eye, Loader2, Package, Search, ShieldAlert } from "lucide-react";
+import { CheckCircle2, Eye, Loader2, Package, Search, ShieldAlert, type LucideIcon } from "lucide-react";
 import { getAdminProducts, type AdminProduct } from "@/lib/api/adminProducts";
 
 const normalizeStatus = (status?: string | null) => (status || "ACTIVE").toUpperCase();
@@ -47,6 +47,17 @@ const AdminModerationPage = () => {
   const pendingCount = products.filter((product) => normalizeStatus(product.status) === "PENDING").length;
   const inactiveCount = products.filter((product) => normalizeStatus(product.status) === "INACTIVE").length;
   const missingCategoryCount = products.filter((product) => !product.category).length;
+  const moderationMetrics: Array<{
+    label: string;
+    value: number;
+    tone: string;
+    Icon: LucideIcon;
+  }> = [
+    { label: "Needs review", value: pendingCount, tone: "text-amber-600 bg-amber-50", Icon: ShieldAlert },
+    { label: "Inactive listings", value: inactiveCount, tone: "text-slate-600 bg-slate-100", Icon: CheckCircle2 },
+    { label: "Missing category", value: missingCategoryCount, tone: "text-red-600 bg-red-50", Icon: Package },
+    { label: "Total listings", value: products.length, tone: "text-[#0F766E] bg-[#E8F5F3]", Icon: CheckCircle2 },
+  ];
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] px-4 py-5 font-['Poppins'] sm:px-6 lg:px-7">
@@ -58,12 +69,7 @@ const AdminModerationPage = () => {
         </header>
 
         <section className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            ["Needs review", pendingCount, "text-amber-600 bg-amber-50", ShieldAlert],
-            ["Inactive listings", inactiveCount, "text-slate-600 bg-slate-100", CheckCircle2],
-            ["Missing category", missingCategoryCount, "text-red-600 bg-red-50", Package],
-            ["Total listings", products.length, "text-[#0F766E] bg-[#E8F5F3]", CheckCircle2],
-          ].map(([label, value, tone, Icon]) => (
+          {moderationMetrics.map(({ label, value, tone, Icon }) => (
             <div key={String(label)} className="flex items-center gap-3 rounded-xl border border-[#E8EEEE] bg-white p-4">
               <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${tone}`}><Icon size={18} /></div>
               <div><p className="text-xs text-[#64748B]">{label}</p><p className="mt-0.5 text-xl font-semibold text-[#0F172A]">{value}</p></div>
