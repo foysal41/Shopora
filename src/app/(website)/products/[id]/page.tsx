@@ -39,6 +39,9 @@ const SingleProduct = () => {
 const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
+  const isBlocked = Boolean(
+    (session?.user as { isBlocked?: boolean } | undefined)?.isBlocked,
+  );
   const productId = params.id as string;
 
   const [product, setProduct] = useState<homePageSingleProduct | null>(null);
@@ -158,6 +161,11 @@ const router = useRouter();
       return;
     }
 
+    if (isBlocked) {
+      toast.error("You are blocked by the authority.");
+      return;
+    }
+
     if (!reviewRating || reviewComment.trim().length < 5) {
       toast.error("Choose a rating and write at least 5 characters.");
       return;
@@ -262,6 +270,11 @@ const router = useRouter();
   ========================================================= */
 
 const handleAddToCart = () => {
+  if (isBlocked) {
+    toast.error("You are blocked by the authority.");
+    return;
+  }
+
   if (!product) {
     toast.error("Product not found");
     return;
@@ -611,7 +624,13 @@ const handleAddToCart = () => {
 
               <button
                 type="button"
-                onClick={() => router.push(`/checkout/${product.id}?quantity=${quantity}`)}
+                onClick={() => {
+                  if (isBlocked) {
+                    toast.error("You are blocked by the authority.");
+                    return;
+                  }
+                  router.push(`/checkout/${product.id}?quantity=${quantity}`);
+                }}
                 disabled={product.stockQuantity <= 0}
                 className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#0F766E] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
               >
