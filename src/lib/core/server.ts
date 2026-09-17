@@ -3,7 +3,8 @@ const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export const apiPost = async <T>(
   path: string,
-  data: unknown
+  data: unknown,
+  options?: { headers?: HeadersInit },
 ): Promise<T> => {
   try {
     if (!baseUrl) {
@@ -17,8 +18,10 @@ export const apiPost = async <T>(
 
     const response = await fetch(url, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...options?.headers,
       },
       body: JSON.stringify(data),
     });
@@ -60,7 +63,10 @@ export const apiPost = async <T>(
 };
 
 
-export const apiDelete = async <T>(path: string): Promise<T> => {
+export const apiDelete = async <T>(
+  path: string,
+  options?: { headers?: HeadersInit },
+): Promise<T> => {
   try {
     if (!baseUrl) {
       throw new Error("NEXT_PUBLIC_API_URL is not defined");
@@ -70,8 +76,10 @@ export const apiDelete = async <T>(path: string): Promise<T> => {
 
     const response = await fetch(url, {
       method: "DELETE",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...options?.headers,
       },
     });
 
@@ -105,7 +113,10 @@ export const apiDelete = async <T>(path: string): Promise<T> => {
 };
 
 
-export const apiGet = async <T>( path: string): Promise<T> => {
+export const apiGet = async <T>(
+  path: string,
+  options?: { headers?: HeadersInit },
+): Promise<T> => {
   try {
     if (!baseUrl) {
       throw new Error("NEXT_PUBLIC_API_URL is not defined");
@@ -117,8 +128,10 @@ export const apiGet = async <T>( path: string): Promise<T> => {
 
     const response = await fetch(url, {
       method: "GET",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...options?.headers,
       },
       cache: "no-store",
     });
@@ -164,6 +177,7 @@ export const apiPatch = async<T>(endPoint: string, body: unknown):Promise<T> => 
 
   const response = await fetch(`${baseUrl}${endPoint}` , {
     method : "PATCH",
+    credentials: "include",
     headers: {
       "Content-Type" : "application/json",
     },

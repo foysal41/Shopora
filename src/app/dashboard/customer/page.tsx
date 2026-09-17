@@ -50,6 +50,7 @@ const emptyStats: CustomerStats = {
 const CustomerDashboard = () => {
   const { data: session, isPending } = useSession();
   const userId = session?.user?.id;
+  const sessionToken = session?.session?.token;
 
   const [orders, setOrders] = useState<MyOrder[]>([]);
   const [products, setProducts] = useState<getProduct[]>([]);
@@ -61,7 +62,7 @@ const CustomerDashboard = () => {
   ========================================================= */
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || !sessionToken) return;
 
     const load = async () => {
       setDataLoading(true);
@@ -69,7 +70,7 @@ const CustomerDashboard = () => {
       // allSettled -> one failing request never blanks the whole dashboard.
       const [ordersRes, wishlistRes, couponsRes, productsRes] =
         await Promise.allSettled([
-          getMyOrders(userId),
+          getMyOrders(userId, sessionToken),
           getWishlist(userId),
           getCoupons(),
           getProducts(),
@@ -121,7 +122,7 @@ const CustomerDashboard = () => {
     };
 
     load();
-  }, [userId]);
+  }, [userId, sessionToken]);
 
   /* =========================================================
      LOADING STATE
