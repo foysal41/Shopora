@@ -397,7 +397,7 @@ const ContactUs = () => {
 
               <button
                 type="submit"
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#FF6B6B] px-6 py-3 font-['Poppins'] text-[15px] font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#F05252] hover:shadow-md"
+                className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#FF6B6B] px-6 py-3 font-['Poppins'] text-[15px] font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#F05252] hover:shadow-md"
               >
                 Send Message
 

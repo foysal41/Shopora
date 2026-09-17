@@ -1,5 +1,6 @@
 import { useSession } from '@/app/lib/auth-client'
 import { CircleUserRound } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 const HeaderStart = () => {
@@ -19,9 +20,9 @@ const HeaderStart = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="flex w-fit items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#334155] shadow-sm transition hover:border-[#0F766E] hover:text-[#0F766E]"
+        <Link
+          href="/dashboard/settings"
+          className="flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#334155] shadow-sm transition hover:border-[#0F766E] hover:text-[#0F766E]"
         >
           <CircleUserRound
             size={18}
@@ -29,7 +30,7 @@ const HeaderStart = () => {
           />
 
           View My Profile
-        </button>
+        </Link>
 
       </section>
   )

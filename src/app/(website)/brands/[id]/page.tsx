@@ -151,7 +151,7 @@ const BrandDetailPage = () => {
 
           <Link
             href="/shop"
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-['Poppins'] text-sm font-semibold text-white transition hover:bg-[#0B625B]"
+            className="inline-flex cursor-pointer shrink-0 items-center gap-2 rounded-lg bg-[#0F766E] px-6 py-3 font-['Poppins'] text-sm font-semibold text-white transition hover:bg-[#0B625B]"
           >
             Shop Now
             <ArrowRight size={17} />

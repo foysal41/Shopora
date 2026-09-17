@@ -320,7 +320,7 @@ export default function ShoporaAssistant() {
                 onClick={handleSend}
                 disabled={!input.trim() || isLoading}
                 aria-label="Send message"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0F766E] text-white transition hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#0F766E] text-white transition hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send size={16} />
               </button>
