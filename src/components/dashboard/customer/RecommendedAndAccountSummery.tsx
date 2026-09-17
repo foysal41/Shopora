@@ -162,12 +162,12 @@ const RecommendedAndAccountSummery = ({
 
               </div>
 
-              <button
-                type="button"
-                className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
+              <Link
+                href="/dashboard/settings"
+                className="cursor-pointer font-['Poppins'] text-[14px] font-semibold text-[#0F766E] hover:underline"
               >
                 Edit
-              </button>
+              </Link>
 
             </div>
 
@@ -196,7 +196,7 @@ const RecommendedAndAccountSummery = ({
 
               <Link
                 href="/dashboard/customer/addresses"
-                className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
+                className="cursor-pointer font-['Poppins'] text-[14px] font-semibold text-[#0F766E] hover:underline"
               >
                 Manage
               </Link>
@@ -226,12 +226,12 @@ const RecommendedAndAccountSummery = ({
 
               </div>
 
-              <button
-                type="button"
-                className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
+              <Link
+                href="/dashboard/customer/payment-methods"
+                className="cursor-pointer font-['Poppins'] text-[14px] font-semibold text-[#0F766E] hover:underline"
               >
                 Manage
-              </button>
+              </Link>
 
             </div>
 
@@ -249,21 +249,21 @@ const RecommendedAndAccountSummery = ({
               <div className="min-w-0 flex-1">
 
                 <h3 className="font-['Poppins'] text-[14px] font-semibold text-[#334155]">
-                  Password &amp; Security
+                  Help &amp; Support
                 </h3>
 
                 <p className="mt-0.5 font-['Poppins'] text-[14px] text-[#64748B]">
-                  Update your password and security
+                  Get help with your account and orders
                 </p>
 
               </div>
 
-              <button
-                type="button"
-                className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
+              <Link
+                href="/dashboard/support"
+                className="cursor-pointer font-['Poppins'] text-[14px] font-semibold text-[#0F766E] hover:underline"
               >
-                Manage
-              </button>
+                View
+              </Link>
 
             </div>
 

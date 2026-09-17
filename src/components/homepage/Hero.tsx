@@ -67,14 +67,14 @@ const Hero = () => {
             {/* CTA */}
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href={`/shop`}>
-              <button className="w-full rounded-lg bg-[#0F766E] px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0B625B] hover:shadow-lg sm:w-auto">
+              <button className="w-full cursor-pointer rounded-lg bg-[#0F766E] px-7 py-3 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#0B625B] hover:shadow-lg sm:w-auto">
                 Shop Now
               </button>
               </Link>
 
 
               <Link href={`/contact`}>
-              <button className="w-full rounded-lg border border-[#FF6B6B] bg-white px-7 py-3 text-sm font-semibold text-[#FF6B6B] transition-all duration-300 hover:bg-[#FF6B6B] hover:text-white sm:w-auto">
+              <button className="w-full cursor-pointer rounded-lg border border-[#FF6B6B] bg-white px-7 py-3 text-sm font-semibold text-[#FF6B6B] transition-all duration-300 hover:bg-[#FF6B6B] hover:text-white sm:w-auto">
                 Contact us
               </button>
               </Link>

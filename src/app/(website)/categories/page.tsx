@@ -276,7 +276,7 @@ const CategoriesPage = () => {
                         </span>
                       </div>
 
-                      <span className="font-['Poppins'] text-xs font-semibold text-[#0F766E]">
+                      <span className="font-['Poppins'] cursor-pointer text-xs font-semibold text-[#0F766E]">
                         Shop Now
                       </span>
                     </div>

@@ -13,9 +13,7 @@ import { getCoupons } from "@/lib/api/coupons";
 import { getProducts } from "@/lib/api/getProducts";
 import type { getProduct } from "@/type/dashboard/Seller";
 
-/* =========================================================
-   DASHBOARD STATS (computed from the customer's real data)
-========================================================= */
+
 
 export type CustomerStats = {
   totalOrders: number;
@@ -27,7 +25,6 @@ export type CustomerStats = {
   pointsToNextReward: number;
 };
 
-// Orders that are still "in progress" (not finished/cancelled).
 const ACTIVE_STATUSES = [
   "PENDING",
   "PLACED",
@@ -57,9 +54,6 @@ const CustomerDashboard = () => {
   const [stats, setStats] = useState<CustomerStats>(emptyStats);
   const [dataLoading, setDataLoading] = useState(true);
 
-  /* =========================================================
-     LOAD EVERYTHING THE DASHBOARD NEEDS (in parallel)
-  ========================================================= */
 
   useEffect(() => {
     if (!userId || !sessionToken) return;
@@ -67,7 +61,6 @@ const CustomerDashboard = () => {
     const load = async () => {
       setDataLoading(true);
 
-      // allSettled -> one failing request never blanks the whole dashboard.
       const [ordersRes, wishlistRes, couponsRes, productsRes] =
         await Promise.allSettled([
           getMyOrders(userId, sessionToken),
@@ -88,7 +81,6 @@ const CustomerDashboard = () => {
       setOrders(ordersData);
       setProducts(productsData);
 
-      // ---- compute stats from the real data ----
       const now = Date.now();
       const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
 
@@ -100,7 +92,6 @@ const CustomerDashboard = () => {
         (o) => now - new Date(o.createdAt).getTime() <= THIRTY_DAYS
       ).length;
 
-      // Loyalty points: 1 point per $1 spent across all orders.
       const totalSpent = ordersData.reduce(
         (sum, o) => sum + (o.total || 0),
         0
@@ -124,9 +115,7 @@ const CustomerDashboard = () => {
     load();
   }, [userId, sessionToken]);
 
-  /* =========================================================
-     LOADING STATE
-  ========================================================= */
+ 
 
   if (isPending) {
     return (
@@ -139,9 +128,7 @@ const CustomerDashboard = () => {
     );
   }
 
-  /* =========================================================
-     MAIN DASHBOARD
-  ========================================================= */
+
 
   return (
     <main className="min-h-screen bg-[#F8FAFC] px-3 py-4 sm:px-5 md:px-6 lg:px-7 xl:px-8">
