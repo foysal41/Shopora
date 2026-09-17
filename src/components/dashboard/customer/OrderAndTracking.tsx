@@ -337,7 +337,7 @@ const OrderAndTracking = ({ orders, loading }: OrderAndTrackingProps) => {
 
             <button
               type="button"
-              className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#0F766E] px-5 py-3 font-['Poppins'] text-[14px] font-semibold text-[#0F766E] transition hover:bg-[#0F766E] hover:text-white sm:w-auto"
+              className="flex cursor-pointer w-full items-center justify-center gap-2 rounded-lg border border-[#0F766E] px-5 py-3 font-['Poppins'] text-[14px] font-semibold text-[#0F766E] transition hover:bg-[#0F766E] hover:text-white sm:w-auto"
             >
               <Bot size={18} />
               Chat Now
