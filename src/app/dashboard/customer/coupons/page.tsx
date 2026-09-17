@@ -5,11 +5,7 @@ import { CalendarDays, Check, Copy, Search, Ticket } from "lucide-react";
 import toast from "react-hot-toast";
 import { getCoupons, type Coupon } from "@/lib/api/coupons";
 
-/* =========================================================
-   CUSTOMER COUPONS  ("coupon wallet")
-   Lists every available coupon and lets the customer copy
-   the code to use at checkout. Reuses GET /api/v1/coupons.
-========================================================= */
+
 
 type StatusFilter = "All" | "Active" | "Expired";
 
@@ -262,7 +258,7 @@ const CouponsPage = () => {
                     type="button"
                     onClick={() => handleCopy(coupon)}
                     disabled={expired}
-                    className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2.5 text-[14px] font-semibold transition ${
+                    className={`flex cursor-pointer shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-2.5 text-[14px] font-semibold transition ${
                       expired
                         ? "cursor-not-allowed border border-slate-200 text-slate-400"
                         : copied
