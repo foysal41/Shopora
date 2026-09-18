@@ -1,44 +1,33 @@
-import { Box, CircleDollarSign, Package, ShoppingCart, Users } from 'lucide-react';
+import { Box, CircleDollarSign, Package, Store, Users } from 'lucide-react';
+import type { AdminCustomer } from '@/lib/api/adminCustomers';
+import type { AdminProduct } from '@/lib/api/adminProducts';
 import React from 'react'
-const stats = [
-  {
-    title: "Total Sales",
-    value: "$24,590.00",
-    change: "+18.6%",
-    icon: CircleDollarSign,
-    type: "teal",
-  },
-  {
-    title: "Total Orders",
-    value: "320",
-    change: "+12.4%",
-    icon: ShoppingCart,
-    type: "teal",
-  },
-  {
-    title: "Total Customers",
-    value: "1,245",
-    change: "+9.3%",
-    icon: Users,
-    type: "teal",
-  },
-  {
-    title: "Average Order Value",
-    value: "$76.84",
-    change: "+7.8%",
-    icon: Package,
-    type: "coral",
-  },
-  {
-    title: "Total Products",
-    value: "842",
-    change: "+5.2%",
-    icon: Box,
-    type: "teal",
-  },
-];
+import { useMemo } from 'react';
 
-const StatCards = () => {
+type StatCardsProps = {
+  products: AdminProduct[];
+  customers: AdminCustomer[];
+  loading: boolean;
+};
+
+const StatCards = ({ products, customers, loading }: StatCardsProps) => {
+  const stats = useMemo(() => {
+    const inventoryValue = products.reduce((total, product) => {
+      const price = product.salePrice && product.salePrice > 0 ? product.salePrice : product.regularPrice;
+      return total + product.stockQuantity * price;
+    }, 0);
+    const lowStock = products.filter((product) => product.stockQuantity <= 5).length;
+    const sellers = new Set(products.map((product) => product.sellerName)).size;
+
+    return [
+      { title: "Inventory Value", value: `$${inventoryValue.toFixed(2)}`, icon: CircleDollarSign, type: "teal" },
+      { title: "Total Customers", value: customers.length.toLocaleString(), icon: Users, type: "teal" },
+      { title: "Total Products", value: products.length.toLocaleString(), icon: Box, type: "teal" },
+      { title: "Low Stock Items", value: lowStock.toLocaleString(), icon: Package, type: "coral" },
+      { title: "Active Sellers", value: sellers.toLocaleString(), icon: Store, type: "teal" },
+    ];
+  }, [customers.length, products]);
+
   return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
 
@@ -79,10 +68,10 @@ const StatCards = () => {
                   {stat.value}
                 </h2>
 
-                <p className="mt-1 font-['Poppins'] text-[11px] text-[#65A30D]">
-                  ↑ {stat.change}{" "}
+                <p className="mt-1 font-['Poppins'] text-[11px] text-[#94A3B8]">
+                  {loading ? "Loading live data..." : "Live data"}{" "}
                   <span className="text-[#94A3B8]">
-                    vs last week
+                    from your store
                   </span>
                 </p>
 
@@ -94,12 +83,7 @@ const StatCards = () => {
                     className="h-full w-full"
                     preserveAspectRatio="none"
                   >
-                    <path
-                      d="M0 27 C15 17, 22 31, 35 23 C49 15, 57 29, 72 20 C87 11, 92 27, 108 18 C123 10, 132 23, 145 14 C158 5, 168 14, 180 4"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    />
+                    <path d="M0 27 C15 17, 22 31, 35 23 C49 15, 57 29, 72 20 C87 11, 92 27, 108 18 C123 10, 132 23, 145 14 C158 5, 168 14, 180 4" fill="none" stroke="currentColor" strokeWidth="1.5" />
                   </svg>
                 </div>
 
