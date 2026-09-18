@@ -23,6 +23,7 @@ import {
   Package,
   Grid2X2,
   Users,
+  Store,
   Warehouse,
   Bot,
   FileBarChart,
@@ -213,6 +214,11 @@ const adminNavItems: NavItem[] = [
     label: "Customers",
     href: "/dashboard/admin/customers",
     icon: Users,
+  },
+  {
+    label: "Manage Sellers",
+    href: "/dashboard/admin/sellers",
+    icon: Store,
   },
   {
     label: "Product Moderation",
