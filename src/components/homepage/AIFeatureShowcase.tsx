@@ -1,4 +1,6 @@
 
+'use client';
+
 import { AIFeature } from "@/type/homePage";
 import Image from "next/image";
 import React from "react";
@@ -55,7 +57,12 @@ const AIFeatureShowcase = () => {
                 {/* CTA */}
                 <button
                   type="button"
-                  className={`mt-4 w-fit rounded-md px-4 py-2 font-['Poppins'] text-[12px] md:text-[16px]  font-medium text-white transition-all duration-300 hover:-translate-y-0.5 sm:px-5 sm:py-2.5  ${
+                  onClick={() => {
+                    if (feature.id === "ai-shopping-assistant") {
+                      window.dispatchEvent(new CustomEvent("open-shopora-assistant"));
+                    }
+                  }}
+                  className={`mt-4 w-fit cursor-pointer rounded-md px-4 py-2 font-['Poppins'] text-[12px] md:text-[16px]  font-medium text-white transition-all duration-300 hover:-translate-y-0.5 sm:px-5 sm:py-2.5  ${
                     index === 0
                       ? "bg-[#0F766E] hover:bg-[#0B625B]"
                       : "bg-[#FF6B6B] hover:bg-[#F05454]"

@@ -591,7 +591,12 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
 
                     {/* Account Settings */}
                     <Link
-                      href="/account/settings"
+                      href={
+                        user.role === "Admin"
+                          ? "/dashboard/admin/settings"
+                          : "/dashboard/settings"
+                      }
+                      onClick={() => setAccountOpen(false)}
                       className="flex w-full items-center gap-3 rounded-lg px-3 py-3 font-['Poppins'] text-sm text-[#334155] transition-colors hover:bg-[#F6FAF9]"
                     >
                       <Settings
@@ -850,7 +855,11 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
 
                     {/* Settings */}
                     <Link
-                      href="/account/settings"
+                      href={
+                        user.role === "Admin"
+                          ? "/dashboard/admin/settings"
+                          : "/dashboard/settings"
+                      }
                       onClick={() =>
                         setAccountOpen(false)
                       }
