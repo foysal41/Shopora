@@ -115,6 +115,11 @@ const customerNavItems: NavItem[] = [
 
 const sellerNavItems: NavItem[] = [
   {
+    label: "Home",
+    href: "/",
+    icon: Home,
+  },
+  {
     label: "Dashboard",
     href: "/dashboard/seller",
     icon: LayoutDashboard,
@@ -179,6 +184,11 @@ const productLinks = [
 
 
 const adminNavItems: NavItem[] = [
+  {
+    label: "Home",
+    href: "/",
+    icon: Home,
+  },
   {
     label: "Dashboard",
     href: "/dashboard/admin",
