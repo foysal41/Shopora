@@ -1,93 +1,25 @@
-import { ChevronDown, Clock3, CreditCard, Package, RefreshCcw, Truck, XCircle } from 'lucide-react';
+'use client';
+
+import { Package, Store } from 'lucide-react';
+import Link from 'next/link';
+import type { AdminProduct } from '@/lib/api/adminProducts';
 import React from 'react'
-const orderStatuses = [
-  {
-    label: "Pending",
-    count: "12",
-    percentage: "3.2%",
-    icon: Clock3,
-    iconClass: "bg-[#FFF4E5] text-[#F59E0B]",
-  },
-  {
-    label: "Paid",
-    count: "78",
-    percentage: "20.8%",
-    icon: CreditCard,
-    iconClass: "bg-[#E8F5F3] text-[#0F766E]",
-  },
-  {
-    label: "Processing",
-    count: "98",
-    percentage: "25.6%",
-    icon: RefreshCcw,
-    iconClass: "bg-[#EAF2FF] text-[#2563EB]",
-  },
-  {
-    label: "Packed",
-    count: "54",
-    percentage: "14.4%",
-    icon: Package,
-    iconClass: "bg-[#F1EBFF] text-[#7C3AED]",
-  },
-  {
-    label: "Shipped",
-    count: "56",
-    percentage: "14.9%",
-    icon: Truck,
-    iconClass: "bg-[#E8F5F3] text-[#0F766E]",
-  },
-  {
-    label: "Delivered",
-    count: "120",
-    percentage: "31.9%",
-    icon: Package,
-    iconClass: "bg-[#EEF8E8] text-[#65A30D]",
-  },
-  {
-    label: "Cancelled",
-    count: "8",
-    percentage: "2.1%",
-    icon: XCircle,
-    iconClass: "bg-[#FFF0F0] text-[#EF4444]",
-  },
-  {
-    label: "Refunded",
-    count: "4",
-    percentage: "1.1%",
-    icon: RefreshCcw,
-    iconClass: "bg-[#F1F5F9] text-[#64748B]",
-  },
-];
 
-const lowStockProducts = [
-  {
-    name: "Wireless Headphones",
-    stock: 5,
-    width: "20%",
-  },
-  {
-    name: "Smart Watch Series 8",
-    stock: 5,
-    width: "20%",
-  },
-  {
-    name: "LED Desk Lamp",
-    stock: 7,
-    width: "32%",
-  },
-  {
-    name: "Running Shoes",
-    stock: 6,
-    width: "27%",
-  },
-  {
-    name: "Coffee Maker",
-    stock: 4,
-    width: "18%",
-  },
-];
+type SalesOrderLowstockStatusProps = {
+  products: AdminProduct[];
+  loading: boolean;
+};
 
-const SalesOrderLowstockStatus = () => {
+const SalesOrderLowstockStatus = ({ products, loading }: SalesOrderLowstockStatusProps) => {
+  const categoryStock = Array.from(
+    products.reduce((categories, product) => {
+      const category = product.category || "Uncategorized";
+      categories.set(category, (categories.get(category) || 0) + product.stockQuantity);
+      return categories;
+    }, new Map<string, number>()),
+  ).sort(([, firstStock], [, secondStock]) => secondStock - firstStock).slice(0, 5);
+  const lowStockProducts = [...products].sort((first, second) => first.stockQuantity - second.stockQuantity).slice(0, 5);
+
   return (
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-12">
 
@@ -100,115 +32,16 @@ const SalesOrderLowstockStatus = () => {
             <div className="flex items-center justify-between">
 
               <h2 className="font-['Poppins'] text-[15px] font-semibold text-[#1E293B]">
-                Sales Overview
+                Inventory by Category
               </h2>
 
-              <button className="flex items-center gap-2 rounded-md border border-[#E8EEEE] px-3 py-1.5 font-['Poppins'] text-[11px] text-[#475569]">
-                This Week
-                <ChevronDown size={12} />
-              </button>
-
             </div>
 
-            <div className="mt-4 flex items-center gap-5">
-
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#0F766E]" />
-                <span className="font-['Poppins'] text-[11px] text-[#64748B]">
-                  This Week
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#CBD5E1]" />
-                <span className="font-['Poppins'] text-[11px] text-[#64748B]">
-                  Last Week
-                </span>
-              </div>
-
-            </div>
-
-            {/* Chart */}
-
-            <div className="mt-4 h-55 w-full">
-
-              <svg
-                viewBox="0 0 700 260"
-                className="h-full w-full"
-                preserveAspectRatio="none"
-              >
-
-                {/* Grid */}
-
-                {[40, 90, 140, 190, 240].map((y) => (
-                  <line
-                    key={y}
-                    x1="45"
-                    y1={y}
-                    x2="680"
-                    y2={y}
-                    stroke="#E8EEEE"
-                    strokeWidth="1"
-                  />
-                ))}
-
-                {/* Area */}
-
-                <path
-                  d="M45 190 C100 160, 120 140, 170 135 C220 130, 230 155, 275 140 C320 125, 335 150, 380 145 C425 140, 455 105, 500 115 C545 125, 570 70, 610 85 C640 95, 660 120, 680 105 L680 240 L45 240 Z"
-                  fill="#E8F5F3"
-                  opacity="0.8"
-                />
-
-                {/* This week */}
-
-                <path
-                  d="M45 190 C100 160, 120 140, 170 135 C220 130, 230 155, 275 140 C320 125, 335 150, 380 145 C425 140, 455 105, 500 115 C545 125, 570 70, 610 85 C640 95, 660 120, 680 105"
-                  fill="none"
-                  stroke="#0F766E"
-                  strokeWidth="3"
-                />
-
-                {/* Last week */}
-
-                <path
-                  d="M45 220 C100 195, 120 190, 170 185 C220 180, 230 205, 275 190 C320 175, 335 200, 380 195 C425 190, 455 160, 500 175 C545 190, 570 135, 610 150 C640 160, 660 175, 680 165"
-                  fill="none"
-                  stroke="#94A3B8"
-                  strokeWidth="2"
-                  strokeDasharray="5 5"
-                />
-
-                {/* Points */}
-
-                {[45, 170, 275, 380, 500, 610, 680].map((x, index) => {
-                  const points = [190, 135, 140, 145, 115, 85, 105];
-
-                  return (
-                    <circle
-                      key={x}
-                      cx={x}
-                      cy={points[index]}
-                      r="4"
-                      fill="white"
-                      stroke="#0F766E"
-                      strokeWidth="2"
-                    />
-                  );
-                })}
-
-              </svg>
-
-            </div>
-
-            <div className="mt-1 flex justify-between pl-10 font-['Poppins'] text-[10px] text-[#94A3B8]">
-              <span>Mon</span>
-              <span>Tue</span>
-              <span>Wed</span>
-              <span>Thu</span>
-              <span>Fri</span>
-              <span>Sat</span>
-              <span>Sun</span>
+            <div className="mt-5 space-y-4">
+              {loading ? <p className="py-12 text-center text-sm text-[#64748B]">Loading inventory...</p> : categoryStock.length === 0 ? <p className="py-12 text-center text-sm text-[#64748B]">No inventory data available.</p> : categoryStock.map(([category, stock]) => {
+                const maximumStock = categoryStock[0][1] || 1;
+                return <div key={category}><div className="flex items-center justify-between text-xs"><span className="font-medium text-[#475569]">{category}</span><span className="text-[#64748B]">{stock} units</span></div><div className="mt-1 h-2 rounded-full bg-[#F1F5F9]"><div className="h-full rounded-full bg-[#0F766E]" style={{ width: `${Math.max(8, (stock / maximumStock) * 100)}%` }} /></div></div>;
+              })}
             </div>
 
           </div>
@@ -223,55 +56,18 @@ const SalesOrderLowstockStatus = () => {
             <div className="flex items-center justify-between">
 
               <h2 className="font-['Poppins'] text-[15px] font-semibold text-[#1E293B]">
-                Order Status
+                Seller Coverage
               </h2>
 
-              <button className="font-['Poppins'] text-[11px] font-medium text-[#0F766E]">
+              <Link href="/dashboard/admin/products" className="cursor-pointer font-['Poppins'] text-[11px] font-medium text-[#0F766E]">
                 View All
-              </button>
+              </Link>
 
             </div>
 
             <div className="mt-3 space-y-2">
 
-              {orderStatuses.map((status) => {
-                const Icon = status.icon;
-
-                return (
-                  <div
-                    key={status.label}
-                    className="flex items-center justify-between"
-                  >
-
-                    <div className="flex items-center gap-2">
-
-                      <div
-                        className={`flex h-5 w-5 items-center justify-center rounded-full ${status.iconClass}`}
-                      >
-                        <Icon size={11} />
-                      </div>
-
-                      <span className="font-['Poppins'] text-[11px] text-[#475569]">
-                        {status.label}
-                      </span>
-
-                    </div>
-
-                    <div className="flex items-center gap-4">
-
-                      <span className="font-['Poppins'] text-[10px] font-medium text-[#1E293B]">
-                        {status.count}
-                      </span>
-
-                      <span className="w-8 text-right font-['Poppins'] text-[9px] text-[#94A3B8]">
-                        {status.percentage}
-                      </span>
-
-                    </div>
-
-                  </div>
-                );
-              })}
+              {loading ? <p className="py-8 text-center text-xs text-[#64748B]">Loading sellers...</p> : Array.from(new Set(products.map((product) => product.sellerName))).slice(0, 6).map((seller) => <div key={seller} className="flex items-center gap-2"><Store size={15} className="text-[#0F766E]" /><span className="truncate text-[11px] text-[#475569]">{seller}</span></div>)}
 
             </div>
 
@@ -290,15 +86,15 @@ const SalesOrderLowstockStatus = () => {
                 Low Stock Alerts
               </h2>
 
-              <button className="font-['Poppins'] text-[11px] font-medium text-[#0F766E]">
+              <Link href="/dashboard/admin/catalog-health" className="cursor-pointer font-['Poppins'] text-[11px] font-medium text-[#0F766E]">
                 View All
-              </button>
+              </Link>
 
             </div>
 
             <div className="mt-3 space-y-3">
 
-              {lowStockProducts.map((product) => (
+              {loading ? <p className="py-8 text-center text-xs text-[#64748B]">Loading stock alerts...</p> : lowStockProducts.length === 0 ? <p className="py-8 text-center text-xs text-[#64748B]">No products available.</p> : lowStockProducts.map((product) => (
                 <div key={product.name}>
 
                   <div className="flex items-center justify-between">
@@ -318,7 +114,7 @@ const SalesOrderLowstockStatus = () => {
                         </p>
 
                         <p className="font-['Poppins'] text-[9px] text-[#94A3B8]">
-                          Stock: {product.stock}
+                          Stock: {product.stockQuantity}
                         </p>
                       </div>
 
@@ -329,7 +125,7 @@ const SalesOrderLowstockStatus = () => {
                   <div className="mt-1 h-1 rounded-full bg-[#F1F5F9]">
                     <div
                       className="h-full rounded-full bg-[#0F766E]"
-                      style={{ width: product.width }}
+                      style={{ width: `${Math.max(8, Math.min(100, product.stockQuantity * 10))}%` }}
                     />
                   </div>
 
@@ -338,9 +134,9 @@ const SalesOrderLowstockStatus = () => {
 
             </div>
 
-            <button className="mt-4 w-full rounded-md border border-[#0F766E] py-2 font-['Poppins'] text-[11px] font-medium text-[#0F766E] transition-colors hover:bg-[#0F766E] hover:text-white">
+            <Link href="/dashboard/admin/products" className="mt-4 flex w-full cursor-pointer justify-center rounded-md border border-[#0F766E] py-2 font-['Poppins'] text-[11px] font-medium text-[#0F766E] transition-colors hover:bg-[#0F766E] hover:text-white">
               View All Products
-            </button>
+            </Link>
 
           </div>
 

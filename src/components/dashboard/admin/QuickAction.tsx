@@ -1,4 +1,5 @@
 import { ArrowUpRight, BarChart3, Package, Sparkles, Tag } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 const QuickAction = () => {
@@ -25,10 +26,10 @@ const QuickAction = () => {
               Generate product descriptions using AI.
             </p>
 
-            <button className="mt-2 flex items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
+            <Link href="/dashboard/admin/ai-tools" className="mt-2 flex cursor-pointer items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
               Go to Tool
               <ArrowUpRight size={11} />
-            </button>
+            </Link>
 
           </div>
 
@@ -53,10 +54,10 @@ const QuickAction = () => {
               View AI recommended products for your customers.
             </p>
 
-            <button className="mt-2 flex items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
+            <Link href="/dashboard/ai-recommendations" className="mt-2 flex cursor-pointer items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
               View Recommendations
               <ArrowUpRight size={11} />
-            </button>
+            </Link>
 
           </div>
 
@@ -81,10 +82,10 @@ const QuickAction = () => {
               Manage stock alerts and inventory updates.
             </p>
 
-            <button className="mt-2 flex items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
+            <Link href="/dashboard/admin/catalog-health" className="mt-2 flex cursor-pointer items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
               Manage Alerts
               <ArrowUpRight size={11} />
-            </button>
+            </Link>
 
           </div>
 
@@ -109,10 +110,10 @@ const QuickAction = () => {
               Create and manage coupons and promotions.
             </p>
 
-            <button className="mt-2 flex items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
+            <Link href="/dashboard/admin/coupons" className="mt-2 flex cursor-pointer items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
               Manage Coupons
               <ArrowUpRight size={11} />
-            </button>
+            </Link>
 
           </div>
 
@@ -137,10 +138,10 @@ const QuickAction = () => {
               View detailed reports and store analytics.
             </p>
 
-            <button className="mt-2 flex items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
+            <Link href="/dashboard/admin/reports" className="mt-2 flex cursor-pointer items-center gap-1 font-['Poppins'] text-[9px] font-medium text-[#0F766E]">
               View Reports
               <ArrowUpRight size={11} />
-            </button>
+            </Link>
 
           </div>
 
