@@ -35,10 +35,9 @@
 
 
 import { betterAuth } from "better-auth";
+import { bearer } from "better-auth/plugins";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "./prisma";
-
-
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -60,8 +59,11 @@ export const auth = betterAuth({
     },
   },
 
-
   trustedOrigins: [
     process.env.NEXT_PUBLIC_BETTER_AUTH_URL!,
+  ],
+
+  plugins: [
+    bearer(),
   ],
 });
