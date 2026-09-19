@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
     <Hero></Hero>
-    <CategoryShowCase></CategoryShowCase>
+    <CategoryShowCase ></CategoryShowCase>
     <PopularProducts></PopularProducts>
     <AIFeatureShowcase></AIFeatureShowcase>
     <PowerOfAi></PowerOfAi>
