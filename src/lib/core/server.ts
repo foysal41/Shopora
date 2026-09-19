@@ -1,5 +1,19 @@
-
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+// Get Better Auth Bearer token
+const getAuthHeaders = (): HeadersInit => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  const token = localStorage.getItem("bearer_token");
+
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+};
 
 export const apiPost = async <T>(
   path: string,
@@ -21,6 +35,7 @@ export const apiPost = async <T>(
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
         ...options?.headers,
       },
       body: JSON.stringify(data),
@@ -28,7 +43,6 @@ export const apiPost = async <T>(
 
     // console.log("API RESPONSE STATUS:", response.status);
 
-    // First response as text so we can see HTML errors too
     const responseText = await response.text();
 
     // console.log("API RESPONSE:", responseText);
@@ -62,7 +76,6 @@ export const apiPost = async <T>(
   }
 };
 
-
 export const apiDelete = async <T>(
   path: string,
   options?: { headers?: HeadersInit },
@@ -79,6 +92,7 @@ export const apiDelete = async <T>(
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
         ...options?.headers,
       },
     });
@@ -112,7 +126,6 @@ export const apiDelete = async <T>(
   }
 };
 
-
 export const apiGet = async <T>(
   path: string,
   options?: { headers?: HeadersInit },
@@ -123,20 +136,22 @@ export const apiGet = async <T>(
     }
 
     const url = `${baseUrl}${path}`;
-    // console.log("API POST URL:", url);
-  
+
+    // console.log("API GET URL:", url);
 
     const response = await fetch(url, {
       method: "GET",
       credentials: "include",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
         ...options?.headers,
       },
       cache: "no-store",
     });
 
     const responseText = await response.text();
+
     // console.log("API RESPONSE :", responseText);
 
     let result: T & { message?: string };
@@ -167,39 +182,36 @@ export const apiGet = async <T>(
   }
 };
 
-
-
-export const apiPatch = async<T>(
+export const apiPatch = async <T>(
   endPoint: string,
   body: unknown,
   options?: { headers?: HeadersInit },
-):Promise<T> => {
+): Promise<T> => {
 
-  //  console.log("PATCH 1 - Endpoint:", endPoint);
+  // console.log("PATCH 1 - Endpoint:", endPoint);
   // console.log("PATCH 1 - Request Body:", body);
 
-
-  const response = await fetch(`${baseUrl}${endPoint}` , {
-    method : "PATCH",
+  const response = await fetch(`${baseUrl}${endPoint}`, {
+    method: "PATCH",
     credentials: "include",
     headers: {
-      "Content-Type" : "application/json",
+      "Content-Type": "application/json",
+      ...getAuthHeaders(),
       ...options?.headers,
     },
     body: JSON.stringify(body),
     cache: "no-store",
-  })
+  });
 
-//  console.log("PATCH 2 - Response Status:", response.status);
-//   console.log("PATCH 2 - Response OK:", response.ok);
+  // console.log("PATCH 2 - Response Status:", response.status);
+  // console.log("PATCH 2 - Response OK:", response.ok);
 
-
-  const data = await response.json()
+  const data = await response.json();
 
   // console.log("PATCH 3 - Response Data:", data);
 
-  if(!response.ok){
-    //  console.log("PATCH 4 - API Error:", data?.message);
+  if (!response.ok) {
+    // console.log("PATCH 4 - API Error:", data?.message);
 
     throw new Error(data?.message || "Something went wrong");
   }
@@ -207,4 +219,4 @@ export const apiPatch = async<T>(
   // console.log("PATCH 5 - Success Data:", data);
 
   return data;
-}
+};
