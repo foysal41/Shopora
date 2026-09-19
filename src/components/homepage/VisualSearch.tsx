@@ -164,13 +164,13 @@ const VisualSearch = () => {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-[#FFF0F0] px-3 py-1.5 font-['Poppins'] text-xs font-semibold text-[#FF6B6B]">
                 <Sparkles size={14} />
-                Shop by sight
+                Shop by sight 
               </span>
               <h2 className="mt-4 max-w-md font-['Poppins'] text-2xl font-semibold leading-tight text-[#1E293B] sm:text-3xl">
                 See something you love? Find it here.
               </h2>
               <p className="mt-3 max-w-md font-['Poppins'] text-sm leading-6 text-[#64748B]">
-                Upload a product photo and discover visually similar pieces from
+                Upload a product photo and discover visually similar products from
                 the Shopora catalog.
               </p>
               <div className="mt-6 flex flex-wrap gap-4 text-xs text-[#64748B]">
