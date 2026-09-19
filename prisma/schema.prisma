@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -9,17 +8,28 @@ datasource db {
 }
 
 model User {
-  id            String   @id
-  name          String
-  email         String   @unique
-  emailVerified Boolean  @default(false)
-  image         String?
-  role          UserRole @default(Customer)
-  createdAt     DateTime
-  updatedAt     DateTime
-
-  sessions Session[]
-  accounts Account[]
+  id               String            @id
+  name             String
+  email            String            @unique
+  emailVerified    Boolean           @default(false)
+  image            String?
+  role             UserRole          @default(Customer)
+  createdAt        DateTime
+  updatedAt        DateTime
+  stripeCustomerId String?
+  isBlocked        Boolean           @default(false)
+  isDeleted        Boolean           @default(false)
+  Address          Address[]
+  Coupon           Coupon[]
+  Notification     Notification[]
+  Order            Order[]
+  OrderItems       OrderItems[]
+  Product          Product[]
+  Review           Review[]
+  Wishlist         Wishlist[]
+  accounts         Account[]
+  payment_methods  payment_methods[]
+  sessions         Session[]
 
   @@map("users")
 }
@@ -32,21 +42,18 @@ model Session {
   updatedAt DateTime
   ipAddress String?
   userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
   @@index([userId])
+  @@map("sessions")
 }
 
 model Account {
-  id         String @id
-  accountId  String
-  providerId String
-  userId     String
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -54,16 +61,15 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   password              String?
-
-  createdAt DateTime
-  updatedAt DateTime
-
-  issuer String
+  createdAt             DateTime
+  updatedAt             DateTime
+  issuer                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, accountId])
-  @@map("accounts")
   @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
   @@index([userId])
+  @@map("accounts")
 }
 
 model Verification {
@@ -75,8 +81,211 @@ model Verification {
   updatedAt  DateTime?
 
   @@unique([identifier, value])
-  @@map("verifications")
   @@index([identifier])
+  @@map("verifications")
+}
+
+model Address {
+  id          String   @id
+  userId      String
+  label       String?
+  fullName    String
+  phone       String
+  addressLine String
+  city        String
+  postalCode  String?
+  country     String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  users       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Brands {
+  id          String    @id
+  name        String    @unique
+  description String?
+  logo        String?
+  status      String    @default("Active")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  Product     Product[]
+}
+
+model Categories {
+  id          String    @id
+  name        String    @unique
+  description String?
+  status      String    @default("Active")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  image       String?
+  Product     Product[]
+
+  @@index([status])
+}
+
+model Coupon {
+  id           String       @id
+  couponCode   String       @unique
+  description  String?
+  discountType DiscountType
+  amount       Float
+  expiryDate   DateTime
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime
+  usageCount   Int          @default(0)
+  usageLimit   Int?
+  status       String       @default("ACTIVE")
+  createdById  String?
+  users        User?        @relation(fields: [createdById], references: [id])
+
+  @@index([couponCode])
+  @@index([createdById])
+  @@index([expiryDate])
+  @@index([status])
+}
+
+model Notification {
+  id         String   @id
+  userId     String
+  type       String
+  title      String
+  message    String
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  link       String?
+  targetRole String?
+  updatedAt  DateTime @default(now())
+  users      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([isRead])
+  @@index([targetRole])
+  @@index([userId])
+}
+
+model Order {
+  id                 String        @id
+  orderNumber        String        @unique
+  customerId         String
+  subtotal           Float
+  shippingFee        Float         @default(0)
+  discount           Float         @default(0)
+  total              Float
+  paymentMethod      String?
+  paymentStatus      PaymentStatus @default(PENDING)
+  orderStatus        OrderStatus   @default(PLACED)
+  shippingName       String
+  shippingPhone      String
+  shippingAddress    String
+  shippingCity       String?
+  shippingPostalCode String?
+  shippingCountry    String?
+  couponCode         String?
+  notes              String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime
+  users              User          @relation(fields: [customerId], references: [id])
+  OrderItems         OrderItems[]
+}
+
+model OrderItems {
+  id          String   @id
+  orderId     String
+  productId   String
+  sellerId    String
+  productName String
+  price       Float
+  quantity    Int
+  total       Float
+  createdAt   DateTime @default(now())
+  Order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  Product     Product  @relation(fields: [productId], references: [id])
+  users       User     @relation(fields: [sellerId], references: [id])
+}
+
+model Product {
+  id               String       @id
+  name             String
+  sku              String       @unique
+  shortDescription String?
+  category         String
+  brand            String?
+  regularPrice     Float
+  salePrice        Float?
+  stockQuantity    Int
+  lowStockAlert    Int          @default(10)
+  stockStatus      String       @default("IN_STOCK")
+  description      String?
+  images           String[]
+  status           String       @default("DRAFT")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime
+  CategoriesId     String?
+  BrandsId         String?
+  sellerId         String
+  rating           Float        @default(0)
+  reviews          Int          @default(0)
+  OrderItems       OrderItems[]
+  Brands           Brands?      @relation(fields: [BrandsId], references: [id])
+  Categories       Categories?  @relation(fields: [CategoriesId], references: [id])
+  users            User         @relation(fields: [sellerId], references: [id])
+  Review           Review[]
+  Wishlist         Wishlist[]
+}
+
+model Review {
+  id         String   @id
+  productId  String
+  customerId String
+  rating     Int
+  comment    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  users      User     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  Product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, customerId])
+  @@index([customerId])
+  @@index([productId])
+}
+
+model Wishlist {
+  id        String   @id
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  Product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  users     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([userId])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model payment_methods {
+  id             String   @id
+  userId         String
+  label          String?
+  brand          String?
+  last4          String
+  expiryMonth    Int
+  expiryYear     Int
+  cardholderName String
+  billingAddress String?
+  isDefault      Boolean  @default(false)
+  providerRef    String?
+  status         String   @default("active")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime
+  users          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isDefault])
 }
 
 enum UserRole {
@@ -85,5 +294,27 @@ enum UserRole {
   Admin
 }
 
+enum DiscountType {
+  FIXED_CART
+  PERCENTAGE
+  FIXED_PRODUCT
+}
 
+enum OrderStatus {
+  PLACED
+  PAID
+  PROCESSING
+  PACKED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+  PENDING
+}
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
