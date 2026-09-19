@@ -65,7 +65,12 @@ const CategoryDetailPage = () => {
           throw new Error(result.message || "Failed to load category");
         }
 
-        setCategory(result.data);
+        setCategory({
+          ...result.data,
+          products: Array.isArray(result.data?.products)
+            ? result.data.products
+            : [],
+        });
       } catch (err) {
         console.error("Category detail error:", err);
         setError(
