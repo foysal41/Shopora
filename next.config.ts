@@ -19,12 +19,21 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**",
       },
-       {
+      {
         protocol: "https",
         hostname: "placehold.co",
       },
     ],
     unoptimized: true,
+  },
+
+  async rewrites() {
+    return [
+      {
+        source: "/backend-api/:path*",
+        destination: "https://shopora-server-xi.vercel.app/:path*",
+      },
+    ];
   },
 };
 
