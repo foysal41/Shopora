@@ -6,6 +6,7 @@ import Hero from "@/components/homepage/Hero";
 import Newsletter from "@/components/homepage/Newsletter";
 import PopularProducts from "@/components/homepage/PopularProducts";
 import PowerOfAi from "@/components/homepage/PowerOfAi";
+import VisualSearch from "@/components/homepage/VisualSearch";
 
 
 
@@ -16,6 +17,7 @@ export default function Home() {
     <CategoryShowCase ></CategoryShowCase>
     <PopularProducts></PopularProducts>
     <AIFeatureShowcase></AIFeatureShowcase>
+    <VisualSearch></VisualSearch>
     <PowerOfAi></PowerOfAi>
     <DealsOfTheDay></DealsOfTheDay>
     <CustomerTrust></CustomerTrust>

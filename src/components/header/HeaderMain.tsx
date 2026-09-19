@@ -398,7 +398,7 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
                 {user ? (
                   <>
                     {/* Avatar */}
-                    <div className="flex h-10 w-10 flex-col items-center justify-center overflow-hidden rounded-full border-2 border-[#0F766E] bg-[#E8F5F3]">
+                    <div className="flex cursor-pointer h-10 w-10 flex-col items-center justify-center overflow-hidden rounded-full border-2 border-[#0F766E] bg-[#E8F5F3]">
                       {user.image ? (
                         <Image
                           src={user.image}
@@ -417,7 +417,7 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
                     </div>
 
                     {/* User Name */}
-                    <div className="hidden text-left xl:block">
+                    <div className="hidden text-left xl:block cursor-pointer">
                       <p className="font-['Poppins'] text-[14px] font-semibold leading-5 text-[#1E293B]">
                         {user.name || "User"}
                       </p>
@@ -433,7 +433,7 @@ const HeaderMain = ({ onMenuOpen }: HeaderMainProps) => {
                     <UserRound
                       size={22}
                       strokeWidth={1.6}
-                      className="text-[#475569] transition-colors group-hover:text-[#0F766E]"
+                      className="text-[#475569] cursor-pointer transition-colors group-hover:text-[#0F766E]"
                     />
 
                     <span className="font-['Poppins'] text-[14px] font-medium text-[#475569]">

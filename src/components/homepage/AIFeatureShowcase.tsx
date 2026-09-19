@@ -61,6 +61,10 @@ const AIFeatureShowcase = () => {
                     if (feature.id === "ai-shopping-assistant") {
                       window.dispatchEvent(new CustomEvent("open-shopora-assistant"));
                     }
+
+                    if (feature.id === "visual-search") {
+                      window.dispatchEvent(new CustomEvent("open-visual-search"));
+                    }
                   }}
                   className={`mt-4 w-fit cursor-pointer rounded-md px-4 py-2 font-['Poppins'] text-[12px] md:text-[16px]  font-medium text-white transition-all duration-300 hover:-translate-y-0.5 sm:px-5 sm:py-2.5  ${
                     index === 0
