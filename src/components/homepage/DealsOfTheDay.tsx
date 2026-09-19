@@ -117,7 +117,7 @@ const DealsOfTheDay = () => {
           </button>
 
           {/* Products */}
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
             {loading ? (
               <p className="col-span-full py-12 text-center font-['Poppins'] text-sm text-[#64748B]">Loading today&apos;s deals...</p>
             ) : visibleDeals.length === 0 ? (
@@ -141,7 +141,7 @@ const DealsOfTheDay = () => {
                   <Image
                     src={product.images?.[0] || "/placeholder.png"}
                     alt={product.name}
-                    className="h-full w-full object-cover mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-contain mix-blend-multiply transition-transform duration-500 group-hover:scale-105"
                     height={512}
                     width={512}
                   />

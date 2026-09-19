@@ -81,7 +81,7 @@ const CategoryShowCase = () => {
   const displayedCategories = categories.slice(0, 6);
 
   return (
-    <section className="bg-white px-4 py-10 md:py-15 sm:px-6 lg:px-8">
+    <section className="bg-white px-4  py-30 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="mb-5 flex items-center justify-between">
