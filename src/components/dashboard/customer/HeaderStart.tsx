@@ -22,7 +22,7 @@ const HeaderStart = () => {
 
         <Link
           href="/dashboard/settings"
-          className="flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#334155] shadow-sm transition hover:border-[#0F766E] hover:text-[#0F766E]"
+          className="flex cursor-pointer w-fit cursor-pointer items-center gap-2 rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 font-['Poppins'] text-[14px] font-medium text-[#334155] shadow-sm transition hover:border-[#0F766E] hover:text-[#0F766E]"
         >
           <CircleUserRound
             size={18}

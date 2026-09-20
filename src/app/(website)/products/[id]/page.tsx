@@ -587,7 +587,7 @@ const handleAddToCart = () => {
                   type="button"
                   onClick={decreaseQuantity}
                   disabled={quantity <= 1}
-                  className="px-4 py-2 font-['Poppins'] text-lg text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="px-4 py-2 cursor-pointer font-['Poppins'] text-lg text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   −
                 </button>
@@ -600,7 +600,7 @@ const handleAddToCart = () => {
                   type="button"
                   onClick={increaseQuantity}
                   disabled={quantity >= product.stockQuantity}
-                  className="px-4 py-2 font-['Poppins'] text-lg text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="px-4 py-2 cursor-pointer font-['Poppins'] text-lg text-[#475569] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   +
                 </button>
@@ -616,7 +616,7 @@ const handleAddToCart = () => {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={product.stockQuantity <= 0}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#FF6B6B] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#F45B5B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
+                className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#FF6B6B] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#F45B5B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
               >
                 <ShoppingCart size={19} />
                 Add to Cart
@@ -632,7 +632,7 @@ const handleAddToCart = () => {
                   router.push(`/checkout/${product.id}?quantity=${quantity}`);
                 }}
                 disabled={product.stockQuantity <= 0}
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#0F766E] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
+                className="flex cursor-pointer flex-1 items-center justify-center gap-2 rounded-lg bg-[#0F766E] px-5 py-3 font-['Poppins'] text-base font-semibold text-white transition-all hover:bg-[#0B625B] disabled:cursor-not-allowed disabled:bg-[#CBD5E1]"
               >
                 <Zap size={19} />
                 Buy Now

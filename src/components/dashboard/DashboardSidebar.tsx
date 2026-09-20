@@ -25,10 +25,9 @@ import {
   Users,
   Store,
   Warehouse,
-  Bot,
   FileBarChart,
+  BarChart3,
   ShieldCheck,
-  ChevronRight,
   ChevronDown,
   Home,
 } from "lucide-react";
@@ -141,13 +140,18 @@ const sellerNavItems: NavItem[] = [
     icon: Warehouse,
   },
   {
+    label: "Store Analytics",
+    href: "/dashboard/seller/analytics",
+    icon: BarChart3,
+  },
+  {
     label: "Coupons",
     href: "/dashboard/seller/coupons",
     icon: Ticket,
   },
 
   {
-    label: "AI Tools",
+    label: "AI Assistant",
     href: "/dashboard/seller/ai-tools",
     icon: Sparkles,
     badgeText: "New",
@@ -603,40 +607,6 @@ const DashboardSidebar = () => {
         <div className="h-[calc(100vh-235px)] overflow-y-auto">
           {navigationContent}
         </div>
-
-
-
-        {userRole === "Seller" && (
-          <div className="border-t border-[#E8EEEE] p-3">
-            <div className="rounded-xl border border-[#E8EEEE] bg-[#F6FAF9] p-3">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
-                  <Bot size={22} className="text-[#0F766E]" />
-                </div>
-
-                <div className="min-w-0">
-                  <h4 className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]">
-                    Shopora AI Assistant
-                  </h4>
-
-                  <p className="mt-1 font-['Poppins'] text-[14px] leading-5 text-[#64748B]">
-                    Generate product descriptions, tags, and optimize your
-                    listings using AI.
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                href="/dashboard/seller/ai-tools"
-                onClick={() => setIsOpen(false)}
-                className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-[#0F766E] bg-white px-3 py-2 font-['Poppins'] text-[14px] font-medium text-[#0F766E] transition-all hover:bg-[#0F766E] hover:text-white"
-              >
-                Open Assistant
-                <ChevronRight size={16} />
-              </Link>
-            </div>
-          </div>
-        )}
 
 
 

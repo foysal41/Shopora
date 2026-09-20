@@ -1,4 +1,5 @@
 import { apiGet, apiPost, apiDelete } from "@/lib/core/server";
+import { authClient } from "@/lib/auth-client";
 
 /* =========================================================
    TYPES
@@ -34,6 +35,12 @@ type WishlistMutationResponse = {
   data?: unknown;
 };
 
+const authHeaders = async () => {
+  const result = await authClient.getSession();
+  const token = result.data?.session?.token;
+  return token ? { Authorization: `Bearer ${token}` } : undefined;
+};
+
 /* =========================================================
    API CALLS
 ========================================================= */
@@ -43,7 +50,8 @@ export const getWishlist = async (
   userId: string
 ): Promise<WishlistItem[]> => {
   const result = await apiGet<WishlistListResponse>(
-    `/api/v1/wishlist?userId=${encodeURIComponent(userId)}`
+    `/api/v1/wishlist?userId=${encodeURIComponent(userId)}`,
+    { headers: await authHeaders() },
   );
 
   return result.data ?? [];
@@ -57,7 +65,8 @@ export const checkWishlist = async (
   const result = await apiGet<WishlistCheckResponse>(
     `/api/v1/wishlist/check?userId=${encodeURIComponent(
       userId
-    )}&productId=${encodeURIComponent(productId)}`
+    )}&productId=${encodeURIComponent(productId)}`,
+    { headers: await authHeaders() },
   );
 
   return Boolean(result.data?.wishlisted);
@@ -68,10 +77,11 @@ export const addToWishlist = async (
   userId: string,
   productId: string
 ): Promise<WishlistMutationResponse> => {
-  return await apiPost<WishlistMutationResponse>("/api/v1/wishlist", {
-    userId,
-    productId,
-  });
+  return await apiPost<WishlistMutationResponse>(
+    "/api/v1/wishlist",
+    { userId, productId },
+    { headers: await authHeaders() },
+  );
 };
 
 // DELETE /api/v1/wishlist/:productId?userId=...
@@ -82,6 +92,7 @@ export const removeFromWishlist = async (
   return await apiDelete<WishlistMutationResponse>(
     `/api/v1/wishlist/${encodeURIComponent(
       productId
-    )}?userId=${encodeURIComponent(userId)}`
+    )}?userId=${encodeURIComponent(userId)}`,
+    { headers: await authHeaders() },
   );
 };

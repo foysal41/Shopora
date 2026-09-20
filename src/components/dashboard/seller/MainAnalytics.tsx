@@ -8,6 +8,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 import { getSellerDashboardStats } from "@/lib/api/sellerDashboard";
@@ -136,8 +137,8 @@ const MainAnalytics = ({
 
   useEffect(() => {
     if (!sellerId) {
-    return;
-  }
+      return;
+    }
 
     const fetchAnalytics = async () => {
       try {
@@ -184,6 +185,16 @@ const MainAnalytics = ({
   /* =========================================================
      LOADING
   ========================================================= */
+
+  if (!sellerId) {
+    return (
+      <div className="mt-5 flex min-h-75 items-center justify-center rounded-xl border border-[#E8EEEE] bg-white">
+        <p className="font-['Poppins'] text-[14px] text-[#64748B]">
+          Seller session required to load analytics.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -252,12 +263,12 @@ const MainAnalytics = ({
             Top Selling Products
           </h2>
 
-          <button
-            type="button"
+          <Link
+            href="/dashboard/seller/products"
             className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
           >
             View All
-          </button>
+          </Link>
         </div>
 
         <div className="mt-5 grid grid-cols-[1fr_55px_85px] border-b border-[#E8EEEE] pb-3">
@@ -352,12 +363,12 @@ const MainAnalytics = ({
             Orders Overview
           </h2>
 
-          <button
-            type="button"
+          <Link
+            href="/dashboard/seller/orders"
             className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
           >
             View All
-          </button>
+          </Link>
 
         </div>
 
@@ -446,12 +457,12 @@ const MainAnalytics = ({
             Recent Orders
           </h2>
 
-          <button
-            type="button"
+          <Link
+            href="/dashboard/seller/orders"
             className="font-['Poppins'] text-[14px] font-semibold text-[#0F766E]"
           >
             View All
-          </button>
+          </Link>
 
         </div>
 
