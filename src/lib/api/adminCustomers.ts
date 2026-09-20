@@ -18,6 +18,14 @@ type CustomersResponse = {
   data: AdminCustomer[];
 };
 
+type AdminUsersResponse = CustomersResponse;
+
+type AdminUserRoleResponse = {
+  success: boolean;
+  message: string;
+  data: AdminCustomer;
+};
+
 const authHeaders = async () => {
   const result = await authClient.getSession();
   const token = result.data?.session?.token;
@@ -27,6 +35,26 @@ const authHeaders = async () => {
 export const getAdminCustomers = async () => {
   const response = await apiGet<CustomersResponse>(
     "/api/v1/admin/customers",
+    { headers: await authHeaders() },
+  );
+  return response.data;
+};
+
+export const getAdminUsers = async () => {
+  const response = await apiGet<AdminUsersResponse>(
+    "/api/v1/admin/users",
+    { headers: await authHeaders() },
+  );
+  return response.data;
+};
+
+export const updateAdminUserRole = async (
+  userId: string,
+  role: "Admin" | "demote",
+) => {
+  const response = await apiPatch<AdminUserRoleResponse>(
+    `/api/v1/admin/users/${userId}/role`,
+    { role },
     { headers: await authHeaders() },
   );
   return response.data;

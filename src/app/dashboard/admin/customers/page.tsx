@@ -6,8 +6,9 @@ import { Ban, CheckCircle2, Search, ShieldCheck, Trash2, UserRound } from "lucid
 import { useSession } from "@/lib/auth-client";
 import {
   deleteAdminCustomer,
-  getAdminCustomers,
+  getAdminUsers,
   setCustomerBlocked,
+  updateAdminUserRole,
   type AdminCustomer,
 } from "@/lib/api/adminCustomers";
 
@@ -23,7 +24,11 @@ const CustomersPage = () => {
     try {
       setLoading(true);
       setError("");
-      setCustomers(await getAdminCustomers());
+        const users = await getAdminUsers();
+        setCustomers(users.filter((user) => {
+          const role = user.role.toLowerCase();
+          return role === "customer" || role === "admin";
+        }));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to load customers");
     } finally {
@@ -74,6 +79,18 @@ const CustomersPage = () => {
     }
   };
 
+  const changeRole = async (customer: AdminCustomer) => {
+    try {
+      setActionId(customer.id);
+      await updateAdminUserRole(customer.id, customer.role.toLowerCase() === "admin" ? "demote" : "Admin");
+      setCustomers((current) => current.filter((item) => item.id !== customer.id));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to update user role");
+    } finally {
+      setActionId(null);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#F8FAFC] px-4 py-5 sm:px-6 lg:px-7">
       <div className="mx-auto max-w-7xl">
@@ -101,7 +118,8 @@ const CustomersPage = () => {
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
                 <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 font-['Poppins'] text-xs font-medium ${customer.isBlocked ? "bg-red-50 text-red-600" : "bg-green-50 text-green-600"}`}>{customer.isBlocked ? <Ban size={13} /> : <CheckCircle2 size={13} />}{customer.isBlocked ? "Blocked" : "Active"}</span>
                 <button type="button" onClick={() => toggleBlock(customer)} disabled={actionId === customer.id} className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#E2E8F0] px-3 py-2 font-['Poppins'] text-xs font-medium text-[#475569] hover:border-[#0F766E] hover:text-[#0F766E] disabled:cursor-not-allowed disabled:opacity-50">{customer.isBlocked ? <ShieldCheck size={14} /> : <Ban size={14} />}{customer.isBlocked ? "Unblock" : "Block"}</button>
-                <button type="button" onClick={() => removeCustomer(customer)} disabled={actionId === customer.id} className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-red-100 px-3 py-2 font-['Poppins'] text-xs font-medium text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"><Trash2 size={14} />Delete</button>
+                <button type="button" onClick={() => void changeRole(customer)} disabled={actionId === customer.id} className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-[#D7EDE9] px-3 py-2 font-['Poppins'] text-xs font-medium text-[#0F766E] hover:bg-[#E8F5F3] disabled:cursor-not-allowed disabled:opacity-50"><ShieldCheck size={14} />{customer.role.toLowerCase() === "admin" ? "Demote" : "Make admin"}</button>
+                <button type="button" onClick={() => void removeCustomer(customer)} disabled={actionId === customer.id} className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-red-100 px-3 py-2 font-['Poppins'] text-xs font-medium text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"><Trash2 size={14} />Delete</button>
               </div>
             </div>)}
           </div>}

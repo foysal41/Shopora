@@ -185,7 +185,7 @@ const Coupons = () => {
           <Link href="/dashboard/seller/coupons/add-coupon">
             <button
               type="button"
-              className="flex w-fit items-center gap-2 rounded-lg bg-[#0F766E] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B625B] hover:shadow-md"
+              className="flex cursor-pointer w-fit items-center gap-2 rounded-lg bg-[#0F766E] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#0B625B] hover:shadow-md"
             >
               <Plus size={18} />
               Create New Coupon

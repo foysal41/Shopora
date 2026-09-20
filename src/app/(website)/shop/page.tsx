@@ -252,7 +252,7 @@ export default function ShopPage() {
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="font-['Poppins'] text-xs font-medium text-[#0F766E] hover:underline"
+                  className="font-['Poppins'] cursor-pointer text-xs font-medium text-[#0F766E] hover:underline"
                 >
                   Clear all
                 </button>
@@ -264,7 +264,7 @@ export default function ShopPage() {
                   Categories
                 </h3>
 
-                <div className="mt-3 space-y-1">
+                <div className="mt-3 space-y-1 cursor-pointer">
                   {categories.map((category) => (
                     <button
                       key={category}
@@ -272,7 +272,7 @@ export default function ShopPage() {
                       onClick={() =>
                         setSelectedCategory(category)
                       }
-                      className={`flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-sm transition ${
+                      className={`flex cursor-pointer w-full items-center justify-between rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-sm transition ${
                         selectedCategory === category
                           ? "bg-[#E8F5F3] font-semibold text-[#0F766E]"
                           : "text-[#64748B] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
@@ -335,11 +335,11 @@ export default function ShopPage() {
                 </p>
               </div>
 
-              <div className="relative">
+              <div className="relative cursor-pointer">
                 <select
                   value={sort}
                   onChange={(e) => setSort(e.target.value)}
-                  className="appearance-none rounded-lg border border-[#E2E8F0] bg-white py-2.5 pl-4 pr-10 font-['Poppins'] text-sm text-[#475569] outline-none focus:border-[#0F766E]"
+                  className="appearance-none cursor-pointer rounded-lg border border-[#E2E8F0] bg-white py-2.5 pl-4 pr-10 font-['Poppins'] text-sm text-[#475569] outline-none focus:border-[#0F766E]"
                 >
                   {sortOptions.map((option) => (
                     <option

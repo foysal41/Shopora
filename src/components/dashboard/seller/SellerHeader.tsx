@@ -27,9 +27,7 @@ const SellerHeader = ({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  // =====================================================
-  // FORMAT DATE FOR API
-  // =====================================================
+  
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -45,9 +43,7 @@ const SellerHeader = ({
     return `${year}-${month}-${day}`;
   };
 
-  // =====================================================
-  // FORMAT DATE FOR DISPLAY
-  // =====================================================
+
 
   const formatDisplayDate = (date: string) => {
     return new Date(
@@ -59,11 +55,7 @@ const SellerHeader = ({
     });
   };
 
-  // =====================================================
-  // THIS WEEK
-  // Sunday → Saturday
-  // =====================================================
-
+ 
   const handleThisWeek = () => {
     const today = new Date();
 
@@ -89,10 +81,7 @@ const SellerHeader = ({
     setIsOpen(false);
   };
 
-  // =====================================================
-  // LAST WEEK
-  // =====================================================
-
+ 
   const handleLastWeek = () => {
     const today = new Date();
 
@@ -118,10 +107,7 @@ const SellerHeader = ({
     setIsOpen(false);
   };
 
-  // =====================================================
-  // THIS MONTH
-  // =====================================================
-
+ 
   const handleThisMonth = () => {
     const today = new Date();
 
@@ -147,16 +133,11 @@ const SellerHeader = ({
     setIsOpen(false);
   };
 
-  // =====================================================
-  // CHECK SELECTED RANGE
-  // =====================================================
 
   const getSelectedRange = () => {
     const today = new Date();
 
-    // -------------------------------
-    // This Week
-    // -------------------------------
+  
 
     const day = today.getDay();
 
@@ -174,9 +155,7 @@ const SellerHeader = ({
       thisWeekStart.getDate() + 6
     );
 
-    // -------------------------------
-    // Last Week
-    // -------------------------------
+   
 
     const lastWeekStart = new Date(today);
 
@@ -192,9 +171,7 @@ const SellerHeader = ({
       lastWeekStart.getDate() + 6
     );
 
-    // -------------------------------
-    // This Month
-    // -------------------------------
+  
 
     const thisMonthStart = new Date(
       today.getFullYear(),
@@ -208,9 +185,7 @@ const SellerHeader = ({
       0
     );
 
-    // -------------------------------
-    // Compare
-    // -------------------------------
+    
 
     if (
       startDate === formatDate(thisWeekStart) &&
@@ -238,10 +213,7 @@ const SellerHeader = ({
 
   const selectedRange = getSelectedRange();
 
-  // =====================================================
-  // UI
-  // =====================================================
-
+ 
   return (
     <div className="mb-6 flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
 
@@ -266,7 +238,7 @@ const SellerHeader = ({
           onClick={() =>
             setIsOpen(!isOpen)
           }
-          className="flex h-11 items-center gap-2 self-start rounded-lg border border-[#E2E8F0] bg-white px-4 font-['Poppins'] text-[14px] font-medium text-[#475569] shadow-sm transition-colors hover:border-[#0F766E] hover:text-[#0F766E]"
+          className="flex cursor-pointer h-11 items-center gap-2 self-start rounded-lg border border-[#E2E8F0] bg-white px-4 font-['Poppins'] text-[14px] font-medium text-[#475569] shadow-sm transition-colors hover:border-[#0F766E] hover:text-[#0F766E]"
         >
           <CalendarDays size={17} />
 
@@ -296,7 +268,7 @@ const SellerHeader = ({
             <button
               type="button"
               onClick={handleThisWeek}
-              className={`w-full rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
+              className={`w-full cursor-pointer rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
                 selectedRange === "This Week"
                   ? "bg-[#E8F7F4] font-semibold text-[#0F766E]"
                   : "text-[#475569] hover:bg-[#E8F7F4] hover:text-[#0F766E]"
@@ -310,7 +282,7 @@ const SellerHeader = ({
             <button
               type="button"
               onClick={handleLastWeek}
-              className={`w-full rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
+              className={`w-full cursor-pointer rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
                 selectedRange === "Last Week"
                   ? "bg-[#E8F7F4] font-semibold text-[#0F766E]"
                   : "text-[#475569] hover:bg-[#E8F7F4] hover:text-[#0F766E]"
@@ -324,7 +296,7 @@ const SellerHeader = ({
             <button
               type="button"
               onClick={handleThisMonth}
-              className={`w-full rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
+              className={`w-full cursor-pointer rounded-lg px-3 py-2.5 text-left font-['Poppins'] text-[14px] transition-colors ${
                 selectedRange === "This Month"
                   ? "bg-[#E8F7F4] font-semibold text-[#0F766E]"
                   : "text-[#475569] hover:bg-[#E8F7F4] hover:text-[#0F766E]"

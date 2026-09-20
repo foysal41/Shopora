@@ -80,9 +80,7 @@ export default function CheckoutPage() {
   const customerId = session?.user?.id;
   const productId = params?.productId as string;
 
-  /* =========================================================
-     CHECKOUT MODE
-  ========================================================= */
+
 
   const quantity =
     Number(searchParams.get("quantity")) || 1;
@@ -90,16 +88,12 @@ export default function CheckoutPage() {
   const fromCart =
     searchParams.get("fromCart") === "true";
 
-  /* =========================================================
-     PRODUCT STATE - BUY NOW
-  ========================================================= */
+ 
 
   const [product, setProduct] =
     useState<homePageSingleProduct | null>(null);
 
-  /* =========================================================
-     CART CHECKOUT STATE
-  ========================================================= */
+
 
   const [checkoutItems, setCheckoutItems] =
     useState<CheckoutItem[]>([]);
@@ -107,9 +101,7 @@ export default function CheckoutPage() {
   const [cartShipping, setCartShipping] =
     useState(0);
 
-  /* =========================================================
-     GENERAL STATE
-  ========================================================= */
+  
 
 const [loading, setLoading] = useState(!fromCart);
 
@@ -122,9 +114,7 @@ const [loading, setLoading] = useState(!fromCart);
   const [orderError, setOrderError] =
     useState("");
 
-  /* =========================================================
-     CUSTOMER INFO
-  ========================================================= */
+
 
   const [customerInfo, setCustomerInfo] =
     useState<CustomerInfo>({
@@ -139,16 +129,11 @@ const [loading, setLoading] = useState(!fromCart);
       country: "Bangladesh",
     });
 
-  /* =========================================================
-     DELIVERY
-  ========================================================= */
+
 
   const [deliveryMethod, setDeliveryMethod] =
     useState("standard");
 
-  /* =========================================================
-     COUPON
-  ========================================================= */
 
   const [couponCode, setCouponCode] =
     useState("");
@@ -159,11 +144,7 @@ const [loading, setLoading] = useState(!fromCart);
   const [discount, setDiscount] =
     useState(0);
 
-  /* =========================================================
-     LOAD BUY NOW PRODUCT
-     
-     Only needed when coming from Buy Now.
-  ========================================================= */
+
 
 useEffect(() => {
   if (fromCart) {
@@ -196,9 +177,7 @@ useEffect(() => {
   }
 }, [productId, fromCart]);
 
-  /* =========================================================
-     LOAD CART CHECKOUT DATA
-  ========================================================= */
+
 
 useEffect(() => {
   if (!fromCart) return;
@@ -235,9 +214,7 @@ useEffect(() => {
     router.push("/cart");
   }
 }, [fromCart, router]);
-  /* =========================================================
-     CUSTOMER INFO CHANGE
-  ========================================================= */
+
 
   const handleChange = (
     field: keyof CustomerInfo,
@@ -249,9 +226,6 @@ useEffect(() => {
     }));
   };
 
-  /* =========================================================
-     CONTINUE TO STEP 2
-  ========================================================= */
 
   const handleContinue = () => {
     if (
@@ -273,17 +247,12 @@ useEffect(() => {
     setCurrentStep(2);
   };
 
-  /* =========================================================
-     BACK TO STEP 1
-  ========================================================= */
+ 
 
   const handleBack = () => {
     setCurrentStep(1);
   };
 
-  /* =========================================================
-     PRICE - BUY NOW
-  ========================================================= */
 
   const productPrice =
     product?.salePrice &&
@@ -291,9 +260,7 @@ useEffect(() => {
       ? product.salePrice
       : product?.regularPrice || 0;
 
-  /* =========================================================
-     CART SUBTOTAL
-  ========================================================= */
+ 
 
   const cartSubtotal =
     checkoutItems.reduce(
@@ -303,17 +270,13 @@ useEffect(() => {
       0
     );
 
-  /* =========================================================
-     FINAL SUBTOTAL
-  ========================================================= */
+
 
   const subtotal = fromCart
     ? cartSubtotal
     : productPrice * quantity;
 
-  /* =========================================================
-     SHIPPING
-  ========================================================= */
+
 
   const shippingFee =
     deliveryMethod === "express"
@@ -322,9 +285,7 @@ useEffect(() => {
         ? cartShipping
         : STANDARD_SHIPPING_FEE;
 
-  /* =========================================================
-     COUPON DISCOUNT
-  ========================================================= */
+ 
 
   const calculateDiscount = (
     coupon: Coupon
@@ -385,9 +346,6 @@ useEffect(() => {
     return 0;
   };
 
-  /* =========================================================
-     APPLY COUPON
-  ========================================================= */
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) {
@@ -455,9 +413,7 @@ useEffect(() => {
     }
   };
 
-  /* =========================================================
-     TOTAL
-  ========================================================= */
+
 
   const total = Math.max(
     subtotal +
@@ -466,9 +422,6 @@ useEffect(() => {
     0
   );
 
-  /* =========================================================
-     CREATE ORDER ITEMS
-  ========================================================= */
 
   const getOrderItems = () => {
     const items = fromCart
@@ -494,9 +447,7 @@ useEffect(() => {
     }));
   };
 
-  /* =========================================================
-     PLACE ORDER - COD
-  ========================================================= */
+  
 
   const handlePlaceOrder = async () => {
     try {
