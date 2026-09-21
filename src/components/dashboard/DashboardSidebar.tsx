@@ -197,6 +197,10 @@ const marketingLinks = [
     label: "Facebook Ads",
     href: "/dashboard/seller/marketing/facebook-ads",
   },
+  {
+    label: "Facebook Leads",
+    href: "/dashboard/seller/marketing/facebook-leads",
+  },
 ];
 
 
@@ -292,7 +296,7 @@ const DashboardSidebar = () => {
   );
 
   const [isMarketingOpen, setIsMarketingOpen] = useState(
-  pathname.startsWith("/dashboard/seller/marketing/facebook-ads")
+  pathname.startsWith("/dashboard/seller/marketing")
 );
   const { data: session, isPending } = useSession();
 
@@ -490,7 +494,7 @@ if (userRole === "Seller" && item.label === "Marketing") {
         type="button"
         onClick={() => setIsMarketingOpen((prev) => !prev)}
         className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${
-          pathname.startsWith("/dashboard/seller/marketing/facebook-ads")
+          pathname.startsWith("/dashboard/seller/marketing")
             ? "bg-[#E8F5F3] text-[#0F766E]"
             : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
         }`}
