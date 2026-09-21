@@ -30,6 +30,8 @@ import {
   ShieldCheck,
   ChevronDown,
   Home,
+  Megaphone,
+  
 } from "lucide-react";
 import Image from "next/image";
 import { getUnreadCount } from "@/lib/api/notifications";
@@ -151,6 +153,12 @@ const sellerNavItems: NavItem[] = [
   },
 
   {
+  label: "Marketing",
+  href: "#",
+  icon: Megaphone,
+},
+
+  {
     label: "AI Assistant",
     href: "/dashboard/seller/ai-tools",
     icon: Sparkles,
@@ -180,6 +188,14 @@ const productLinks = [
   {
     label: "Brands",
     href: "/dashboard/seller/products/brands",
+  },
+];
+
+
+const marketingLinks = [
+  {
+    label: "Facebook Ads",
+    href: "/dashboard/seller/marketing/facebook-ads",
   },
 ];
 
@@ -275,6 +291,9 @@ const DashboardSidebar = () => {
     pathname.startsWith("/dashboard/products")
   );
 
+  const [isMarketingOpen, setIsMarketingOpen] = useState(
+  pathname.startsWith("/dashboard/seller/marketing/facebook-ads")
+);
   const { data: session, isPending } = useSession();
 
 
@@ -461,6 +480,62 @@ const DashboardSidebar = () => {
               </div>
             );
           }
+
+
+if (userRole === "Seller" && item.label === "Marketing") {
+  return (
+    <div key={item.label}>
+      {/* Marketing Button */}
+      <button
+        type="button"
+        onClick={() => setIsMarketingOpen((prev) => !prev)}
+        className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-['Poppins'] text-[14px] font-medium transition-all duration-200 ${
+          pathname.startsWith("/dashboard/seller/marketing/facebook-ads")
+            ? "bg-[#E8F5F3] text-[#0F766E]"
+            : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
+        }`}
+      >
+        <Megaphone size={18} strokeWidth={1.8} />
+
+        <span className="flex-1 text-left">Marketing</span>
+
+        <ChevronDown
+          size={16}
+          strokeWidth={1.8}
+          className={`transition-transform duration-200 ${
+            isMarketingOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      {/* Marketing Dropdown */}
+      {isMarketingOpen && (
+        <div className="relative ml-4 mt-1 space-y-1 border-l border-[#DDE8E7] pl-3">
+          {marketingLinks.map((marketing) => {
+            const active = isActive(marketing.href);
+
+            return (
+              <Link
+                key={marketing.href}
+                href={marketing.href}
+                onClick={() => setIsOpen(false)}
+                className={`block rounded-md px-3 py-2 font-['Poppins'] text-[14px] font-medium transition-colors duration-200 ${
+                  active
+                    ? "bg-[#E8F5F3] text-[#0F766E]"
+                    : "text-[#475569] hover:bg-[#F6FAF9] hover:text-[#0F766E]"
+                }`}
+              >
+                {marketing.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 
 
 
