@@ -31,10 +31,12 @@ import {
   ChevronDown,
   Home,
   Megaphone,
+  Search,
   
 } from "lucide-react";
 import Image from "next/image";
 import { getUnreadCount } from "@/lib/api/notifications";
+import { FaResearchgate } from "react-icons/fa";
 
 type UserRole = "Customer" | "Seller" | "Admin";
 
@@ -60,7 +62,7 @@ const customerNavItems: NavItem[] = [
     icon: LayoutDashboard,
   },
   {
-    label: "My Orders - customer",
+    label: "My Orders",
     href: "/dashboard/customer/my-order",
     icon: ShoppingBag,
   },
@@ -98,6 +100,11 @@ const customerNavItems: NavItem[] = [
     label: "Reviews",
     href: "/dashboard/reviews",
     icon: Star,
+  },
+  {
+    label: "Product Insights",
+    href: "/dashboard/customer/product-insights",
+    icon: Search,
   },
   {
     label: "AI Recommendations",
