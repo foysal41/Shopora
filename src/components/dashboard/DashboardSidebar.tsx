@@ -205,6 +205,10 @@ const marketingLinks = [
     label: "Business Leads",
     href: "/dashboard/seller/marketing/business-leads",
   },
+   {
+    label: "Instagram Leads",
+    href: "/dashboard/seller/marketing/instagram-leads",
+  },
 ];
 
 
