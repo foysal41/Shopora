@@ -209,6 +209,10 @@ const marketingLinks = [
     label: "Instagram Leads",
     href: "/dashboard/seller/marketing/instagram-leads",
   },
+  {
+  label: "TikTok Leads",
+  href: "/dashboard/seller/marketing/tiktok-leads",
+},
 ];
 
 
