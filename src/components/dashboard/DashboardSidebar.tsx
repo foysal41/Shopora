@@ -201,6 +201,10 @@ const marketingLinks = [
     label: "Facebook Leads",
     href: "/dashboard/seller/marketing/facebook-leads",
   },
+  {
+    label: "Business Leads",
+    href: "/dashboard/seller/marketing/business-leads",
+  },
 ];
 
 
