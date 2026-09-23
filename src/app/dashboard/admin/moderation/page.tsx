@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Eye, Loader2, Package, Search, ShieldAlert, type LucideIcon } from "lucide-react";
-import { getAdminProducts, type AdminProduct } from "@/lib/api/adminProducts";
+import { CheckCircle2, Eye, Loader2, Package, Search, ShieldAlert, Trash2, type LucideIcon } from "lucide-react";
+import { deleteAdminProduct, getAdminProducts, type AdminProduct } from "@/lib/api/adminProducts";
+import DeleteProductModalAdmin from "@/components/dashboard/admin/DeleteProductModalAdmin";
+import { toast } from "react-hot-toast";
 
 const normalizeStatus = (status?: string | null) => (status || "ACTIVE").toUpperCase();
 
@@ -13,6 +15,8 @@ const AdminModerationPage = () => {
   const [status, setStatus] = useState("ALL");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleteProduct, setDeleteProduct] = useState<AdminProduct | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -29,6 +33,22 @@ const AdminModerationPage = () => {
 
     void loadProducts();
   }, []);
+
+  const handleDelete = async () => {
+    if (!deleteProduct) return;
+
+    try {
+      setIsDeleting(true);
+      await deleteAdminProduct(deleteProduct.id);
+      setProducts((currentProducts) => currentProducts.filter((product) => product.id !== deleteProduct.id));
+      setDeleteProduct(null);
+      toast.success("Product deleted successfully");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete product");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const filteredProducts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -62,6 +82,13 @@ const AdminModerationPage = () => {
   return (
     <main className="min-h-screen bg-[#F8FAFC] px-4 py-5 font-['Poppins'] sm:px-6 lg:px-7">
       <div className="mx-auto max-w-7xl">
+        <DeleteProductModalAdmin
+          isOpen={deleteProduct !== null}
+          productName={deleteProduct?.name}
+          onClose={() => setDeleteProduct(null)}
+          onConfirm={handleDelete}
+          isDeleting={isDeleting}
+        />
         <header className="mb-6">
           <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-[#0F766E]"><ShieldAlert size={15} /> Admin controls</p>
           <h1 className="mt-2 text-2xl font-semibold text-[#0F172A]">Product Moderation</h1>
@@ -84,8 +111,8 @@ const AdminModerationPage = () => {
           </div>
           {error && <p className="m-4 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
           <div className="overflow-x-auto">
-            <table className="w-full min-w-190 text-left"><thead className="bg-[#FCFDFD] text-xs font-semibold uppercase tracking-wide text-[#64748B]"><tr><th className="px-5 py-3">Listing</th><th className="px-5 py-3">Seller</th><th className="px-5 py-3">Category</th><th className="px-5 py-3">Status</th><th className="px-5 py-3 text-right">Review</th></tr></thead><tbody className="divide-y divide-[#EEF2F2]">
-              {loading ? <tr><td colSpan={5} className="py-16 text-center text-sm text-[#64748B]"><Loader2 size={20} className="mx-auto mb-2 animate-spin text-[#0F766E]" />Loading listings...</td></tr> : filteredProducts.length === 0 ? <tr><td colSpan={5} className="py-16 text-center text-sm text-[#64748B]">No listings match your filters.</td></tr> : filteredProducts.map((product) => <tr key={product.id} className="hover:bg-[#FCFDFD]"><td className="px-5 py-4"><p className="font-medium text-[#1E293B]">{product.name}</p><p className="mt-1 text-xs text-[#94A3B8]">SKU: {product.sku || "Not provided"}</p></td><td className="px-5 py-4 text-sm text-[#475569]">{product.sellerName}</td><td className="px-5 py-4 text-sm text-[#64748B]">{product.category || <span className="text-red-500">Uncategorized</span>}</td><td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-medium ${normalizeStatus(product.status) === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : normalizeStatus(product.status) === "PENDING" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{normalizeStatus(product.status)}</span></td><td className="px-5 py-4 text-right"><Link href={`/products/${product.id}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F766E] hover:underline"><Eye size={15} /> View</Link></td></tr>)}
+            <table className="w-full min-w-190 text-left"><thead className="bg-[#FCFDFD] text-xs font-semibold uppercase tracking-wide text-[#64748B]"><tr><th className="px-5 py-3">Listing</th><th className="px-5 py-3">Seller</th><th className="px-5 py-3">Category</th><th className="px-5 py-3">Status</th><th className="px-5 py-3 text-right">Actions</th></tr></thead><tbody className="divide-y divide-[#EEF2F2]">
+              {loading ? <tr><td colSpan={5} className="py-16 text-center text-sm text-[#64748B]"><Loader2 size={20} className="mx-auto mb-2 animate-spin text-[#0F766E]" />Loading listings...</td></tr> : filteredProducts.length === 0 ? <tr><td colSpan={5} className="py-16 text-center text-sm text-[#64748B]">No listings match your filters.</td></tr> : filteredProducts.map((product) => <tr key={product.id} className="hover:bg-[#FCFDFD]"><td className="px-5 py-4"><p className="font-medium text-[#1E293B]">{product.name}</p><p className="mt-1 text-xs text-[#94A3B8]">SKU: {product.sku || "Not provided"}</p></td><td className="px-5 py-4 text-sm text-[#475569]">{product.sellerName}</td><td className="px-5 py-4 text-sm text-[#64748B]">{product.category || <span className="text-red-500">Uncategorized</span>}</td><td className="px-5 py-4"><span className={`rounded-full px-2.5 py-1 text-xs font-medium ${normalizeStatus(product.status) === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : normalizeStatus(product.status) === "PENDING" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{normalizeStatus(product.status)}</span></td><td className="px-5 py-4"><div className="flex justify-end gap-4"><Link href={`/products/${product.id}`} className="inline-flex items-center gap-1.5 text-sm font-medium text-[#0F766E] hover:underline"><Eye size={15} /> View</Link><button type="button" onClick={() => setDeleteProduct(product)} className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700" aria-label={`Delete ${product.name}`}><Trash2 size={15} /> Delete</button></div></td></tr>)}
             </tbody></table>
           </div>
         </section>

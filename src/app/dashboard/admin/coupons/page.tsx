@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Clipboard, Loader2, RefreshCw, Search, Tag, Ticket } from "lucide-react";
-import { getCoupons, type Coupon } from "@/lib/api/coupons";
+import Link from "next/link";
+import { Clipboard, Loader2, Plus, RefreshCw, Search, Tag, Ticket, Trash2 } from "lucide-react";
+import { deleteAdminCoupon, getCoupons, type Coupon } from "@/lib/api/coupons";
+import CouponDeleteModalAdmin from "@/components/dashboard/admin/CouponDeleteModalAdmin";
 import toast from "react-hot-toast";
 
 const getStatus = (expiryDate: string) => {
@@ -23,6 +25,8 @@ const AdminCouponsPage = () => {
     const [status, setStatus] = useState("ALL");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [couponToDelete, setCouponToDelete] = useState<Coupon | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const loadCoupons = async () => {
         try {
@@ -65,9 +69,34 @@ const AdminCouponsPage = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (!couponToDelete) return;
+
+        try {
+            setIsDeleting(true);
+            await deleteAdminCoupon(couponToDelete.id);
+            setCoupons((currentCoupons) =>
+                currentCoupons.filter((coupon) => coupon.id !== couponToDelete.id),
+            );
+            setCouponToDelete(null);
+            toast.success("Coupon deleted successfully");
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : "Failed to delete coupon");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
     return (
         <main className="min-h-screen bg-[#F8FAFC] px-4 py-5 font-['Poppins'] sm:px-6 lg:px-7">
             <div className="mx-auto max-w-7xl">
+                <CouponDeleteModalAdmin
+                    isOpen={couponToDelete !== null}
+                    couponCode={couponToDelete?.couponCode}
+                    onClose={() => setCouponToDelete(null)}
+                    onConfirm={() => void handleDelete()}
+                    isDeleting={isDeleting}
+                />
                 <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-[0.12em] text-[#0F766E]">
@@ -78,13 +107,21 @@ const AdminCouponsPage = () => {
                             Monitor promotional codes and their storefront availability.
                         </p>
                     </div>
-                    <button
-                        type="button"
-                        onClick={() => void loadCoupons()}
-                        className="flex items-center gap-2 self-start rounded-lg border border-[#E8EEEE] bg-white px-3 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F6FAF9]"
-                    >
-                        <RefreshCw size={16} /> Refresh
-                    </button>
+                    <div className="flex flex-wrap gap-2 self-start">
+                        <button
+                            type="button"
+                            onClick={() => void loadCoupons()}
+                            className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#E8EEEE] bg-white px-3 py-2.5 text-sm font-medium text-[#475569] hover:bg-[#F6FAF9]"
+                        >
+                            <RefreshCw size={16} /> Refresh
+                        </button>
+                        <Link
+                            href="/dashboard/admin/coupons/add-coupon"
+                            className="flex items-center gap-2 rounded-lg bg-[#0F766E] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#0B625B]"
+                        >
+                            <Plus size={17} /> Create New Coupon
+                        </Link>
+                    </div>
                 </header>
 
                 <section className="mb-6 grid gap-3 sm:grid-cols-3">
@@ -148,19 +185,20 @@ const AdminCouponsPage = () => {
                                     <th className="px-5 py-3">Value</th>
                                     <th className="px-5 py-3">Expires</th>
                                     <th className="px-5 py-3">Status</th>
+                                    <th className="px-5 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#EEF2F2]">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={6} className="py-16 text-center text-sm text-[#64748B]">
+                                        <td colSpan={7} className="py-16 text-center text-sm text-[#64748B]">
                                             <Loader2 size={20} className="mx-auto mb-2 animate-spin text-[#0F766E]" />
                                             Loading coupons...
                                         </td>
                                     </tr>
                                 ) : filteredCoupons.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="py-16 text-center text-sm text-[#64748B]">
+                                        <td colSpan={7} className="py-16 text-center text-sm text-[#64748B]">
                                             No coupons match your filters.
                                         </td>
                                     </tr>
@@ -210,6 +248,16 @@ const AdminCouponsPage = () => {
                                                     >
                                                         {couponStatus}
                                                     </span>
+                                                </td>
+                                                <td className="px-5 py-4 text-right">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setCouponToDelete(coupon)}
+                                                        className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700"
+                                                        aria-label={`Delete ${coupon.couponCode}`}
+                                                    >
+                                                        <Trash2 size={15} /> Delete
+                                                    </button>
                                                 </td>
                                             </tr>
                                         );

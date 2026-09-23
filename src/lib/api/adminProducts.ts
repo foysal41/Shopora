@@ -56,3 +56,25 @@ export const getAdminProducts = async () => {
       product.seller?.id || product.createdBy?.id || null,
   }));
 };
+
+export const deleteAdminProduct = async (productId: string) => {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/admin/products/${productId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getAuthHeaders()),
+      },
+      cache: "no-store",
+    },
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.message || "Failed to delete product");
+  }
+
+  return result;
+};
