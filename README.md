@@ -1,11 +1,18 @@
 # Shopora – Software Requirement Specification (SRS)
 
 **Project Name:** Shopora  
-**Project Type:** AI-Powered E-commerce Platform  
+**Project Type:** AI-Powered Multi-Vendor E-commerce Platform  
 **Industry:** E-commerce & Online Retail  
 **Document Type:** Software Requirement Specification  
-**Version:** 1.0  
-**Last Updated:** September 2026  
+**Version:** 2.0
+
+# Project Live URL
+**Front-End:** https://shopora-ashen.vercel.app
+
+# Github URL
+**Front-End:**  https://github.com/foysal41/Shopora
+**Backend-End:** https://github.com/foysal41/Shopora-server
+
 
 ---
 
@@ -13,34 +20,28 @@
 
 ## 1.1 Introduction
 
-Shopora is a modern AI-powered multi-vendor e-commerce platform designed to provide a complete online shopping experience for customers, sellers, and administrators.
+Shopora is a modern AI-powered multi-vendor e-commerce platform designed to provide a complete online shopping and seller-management experience for customers, sellers, and administrators.
 
-The platform covers the complete e-commerce workflow, including product discovery, product management, shopping cart, wishlist, checkout, payment, order management, inventory management, coupons, order tracking, and administration.
+The platform covers product discovery, product management, shopping cart, wishlist, checkout, payment, orders, inventory, coupons, analytics, dashboards, customer support, AI assistance, and seller-focused marketing tools.
 
-Shopora also introduces AI-powered capabilities to improve both customer and seller experiences.
-
-The platform is designed around three major user roles:
+The project is structured around three primary user roles:
 
 - Customer
 - Seller
 - Admin
 
-Each role will have its own dashboard and permissions according to its responsibilities.
-
----
+Each role has dedicated interfaces, workflows, and access permissions.
 
 ## 1.2 Project Vision
 
-The primary vision of Shopora is to create a smart, secure, scalable, and user-friendly e-commerce ecosystem where:
+Shopora aims to provide a smart, secure, scalable, and user-friendly e-commerce ecosystem where:
 
-- Customers can easily discover and purchase products.
-- Sellers can manage their products, inventory, orders, and store activities.
-- Administrators can manage the entire platform.
-- AI can assist sellers with product content generation.
-- AI can assist customers with product discovery and recommendations.
-- Real-time communication can be used for important order and inventory updates.
-
----
+- Customers can discover, compare, save, and purchase products.
+- Sellers can manage products, inventory, orders, coupons, analytics, and marketing activities.
+- Administrators can manage users, products, orders, and platform operations.
+- AI can assist with product content, recommendations, shopping support, and seller marketing.
+- Customers can receive a more personalized shopping experience.
+- Sellers can research markets, discover leads, and promote products more efficiently.
 
 ## 1.3 Target Users
 
@@ -51,211 +52,196 @@ Shopora is intended for:
 - Small brands
 - Online retailers
 - E-commerce businesses
-- Store administrators
+- Store administrators and operations teams
 - End consumers
 
 ---
 
-# 2. Objectives
+# 2. Architecture & Design Foundation
 
-The main objectives of Shopora are:
+## 2.1 Initial Architecture
 
-## 2.1 Customer Objectives
+The platform is organized around a modular architecture separating:
 
-- Provide a simple and convenient online shopping experience.
-- Allow customers to search and filter products.
-- Allow customers to view detailed product information.
-- Allow customers to manage their shopping cart.
-- Allow customers to maintain a wishlist.
-- Provide a structured checkout process.
-- Allow customers to place orders.
-- Provide order history and order tracking.
-- Provide personalized product recommendations.
-- Provide AI-powered shopping assistance.
+- Public/customer-facing experience
+- Seller operations
+- Admin operations
+- Authentication and authorization
+- Product and inventory management
+- Shopping and checkout
+- Order and payment management
+- AI services
+- Analytics
+- Marketing and lead-generation services
+
+The architecture is designed to keep major features separated into reusable and maintainable application modules.
+
+## 2.2 UI/UX Foundation
+
+The platform follows a responsive and consistent UI/UX approach across customer, seller, and admin experiences.
+
+The design direction includes:
+
+- Responsive layouts for desktop, tablet, and mobile
+- Reusable interface components
+- Consistent navigation and dashboard structures
+- Clear product discovery and purchase flows
+- Role-specific dashboard experiences
+- Consistent forms, cards, buttons, icons, and feedback states
+
+The project brand direction uses a clean modern visual language with **Teal**, **Coral**, light backgrounds, Slate text, and **Poppins** typography.
 
 ---
 
-## 2.2 Seller Objectives
+# 3. Objectives
 
-- Allow sellers to create and manage products.
-- Allow sellers to upload product images.
-- Allow sellers to manage pricing and stock.
-- Allow sellers to manage categories and brands.
-- Allow sellers to view customer orders related to their products.
-- Allow sellers to monitor inventory.
-- Provide coupon and discount management.
-- Provide sales and earnings information.
-- Provide AI-powered product description and tag generation.
+## 3.1 Customer Objectives
 
----
+- Provide a simple and convenient shopping experience.
+- Search and filter products.
+- Browse categories and brands.
+- View detailed product information.
+- Add and manage cart items.
+- Maintain a wishlist.
+- Apply coupons.
+- Complete checkout and payment.
+- View order history and order details.
+- Track order status.
+- Use AI-powered shopping assistance.
+- Receive personalized product recommendations.
+- Access customer dashboard features such as coupons, payment methods, account settings, notifications, and support.
 
-## 2.3 Admin Objectives
+## 3.2 Seller Objectives
 
-- Provide centralized platform management.
+- Create, edit, and delete products.
+- Manage product pricing and stock.
+- Manage categories and brands.
+- Manage coupons.
+- View and manage orders.
+- Monitor inventory.
+- View analytics and sales information.
+- Generate AI-assisted product descriptions.
+- Share products using AI-generated promotional content.
+- Research Facebook Ads and market information.
+- Generate business and social-media leads.
+- Discover influencers for product marketing.
+- Research customer product reviews and problems.
+
+## 3.3 Admin Objectives
+
 - Manage customers and sellers.
 - Manage products.
 - Manage categories and brands.
-- Manage orders.
-- Manage inventory.
-- Manage coupons and discounts.
-- Monitor platform activities.
-- Provide sales and order analytics.
-- Manage AI and real-time platform features.
+- Manage orders and inventory.
+- Manage platform coupons.
+- Monitor customer reviews.
+- View analytics and reports.
+- Manage dashboard notifications.
+- Manage platform settings.
+- Block or unblock customers.
+- Manage customer and product administration routes.
 
----
+## 3.4 Technical Objectives
 
-## 2.4 Technical Objectives
-
-- Use PostgreSQL for reliable relational data storage.
-- Use Prisma ORM for database access and schema management.
-- Use a structured REST API architecture.
-- Maintain proper relationships between users, products, orders, and order items.
-- Use transactions for critical order operations.
-- Build a responsive user interface.
+- Use PostgreSQL for relational data storage.
+- Use Prisma ORM for structured database access.
+- Maintain relationships between users, sellers, products, orders, and order items.
+- Use protected API requests and role-based access control.
+- Provide responsive and reusable UI components.
 - Maintain scalable and maintainable project architecture.
+- Integrate AI and external data services where required.
 
 ---
 
-# 3. User Roles
+# 4. User Roles
 
-Shopora contains three primary user roles:
-
-1. Customer
-2. Seller
-3. Admin
-
----
-
-## 3.1 Customer
-
-A customer is an end user who visits Shopora to discover and purchase products.
-
-### Customer Permissions
+## 4.1 Customer
 
 Customers can:
 
-- Register an account.
-- Log in and log out.
-- Browse products.
-- Search products.
-- Filter products.
+- Register and authenticate.
+- Browse, search, and filter products.
 - View product details.
 - Add products to cart.
-- Update cart quantity.
-- Remove products from cart.
-- Add products to wishlist.
-- Remove products from wishlist.
-- Apply available coupons.
-- Enter shipping information.
-- Select a payment method.
-- Place an order.
-- View order history.
-- View individual order details.
+- Update and remove cart items.
+- Add and remove wishlist items.
+- Apply coupons.
+- Enter checkout information.
+- Select payment methods.
+- Place orders.
+- View order history and details.
 - Track order status.
-- Receive order updates.
-- View personalized product recommendations.
-- Use AI shopping assistance.
+- Use AI recommendations.
+- Use AI/customer support assistance.
+- Manage dashboard settings and notifications.
 
----
-
-## 3.2 Seller
-
-A seller is a user who sells products through the Shopora marketplace.
-
-### Seller Permissions
+## 4.2 Seller
 
 Sellers can:
 
 - Access the seller dashboard.
-- Create products.
-- Edit products.
-- Delete products.
-- Upload product images.
-- Manage product pricing.
-- Manage product stock.
-- Manage product status.
-- Manage categories.
-- Manage brands.
+- Create, edit, and delete products.
+- Manage pricing, stock, categories, and brands.
 - View products belonging to their store.
-- View orders containing their products.
-- Monitor inventory.
 - Manage coupons.
-- View earnings.
-- View sales information.
-- Use AI product description tools.
-- View relevant store analytics.
+- View and manage orders.
+- Monitor inventory.
+- View analytics.
+- Use AI product-content tools.
+- Use seller marketing and lead-generation tools.
 
-### Seller Ownership
+Each product is associated with its seller.
 
-Each product must be associated with a seller through the seller's user ID.
+Relationship:
 
-The relationship is:
+```text
+User/Seller → Product → OrderItem → Order
+```
 
-User/Seller → Product → OrderItems → Order
-
-This allows the system to identify which seller owns a product and which orders contain that seller's products.
-
----
-
-## 3.3 Admin
-
-The admin is responsible for managing the complete Shopora platform.
-
-### Admin Permissions
+## 4.3 Admin
 
 Admins can:
 
 - Access the admin dashboard.
-- Manage users.
-- Manage sellers.
-- Manage customers.
+- Manage users, customers, and sellers.
 - Manage products.
-- Manage categories.
-- Manage brands.
-- Manage orders.
-- Manage inventory.
+- Manage categories and brands.
+- Manage orders and inventory.
 - Manage coupons.
 - Monitor reviews.
-- Access AI tools.
 - View reports and analytics.
-- Manage notifications.
-- Manage platform settings.
-- Monitor overall platform activities.
+- Manage notifications and settings.
+- Block or unblock customers.
 
 ---
 
-# 4. Functional Requirements
+# 5. Functional Requirements
 
-Functional requirements define what the Shopora system must do.
-
----
-
-## 4.1 User Authentication
+## 5.1 Authentication & Authorization
 
 The system shall provide:
 
-- User registration.
-- User login.
-- User logout.
-- User session management.
-- Role-based access.
-- Customer authentication.
-- Seller authentication.
-- Admin authentication.
+- User registration
+- Login and logout
+- Session management
+- Role-based access
+- Protected frontend routes
+- Protected API requests
+- Customer, seller, and admin access separation
 
-Each authenticated user will have an associated role:
+Roles:
 
-- Customer
-- Seller
-- Admin
+```text
+Customer
+Seller
+Admin
+```
 
 ---
 
-## 4.2 Product Catalog Management
+## 5.2 Product Catalog Management
 
-The system shall provide a structured product catalog.
-
-Each product may contain:
+Products may contain:
 
 - Product ID
 - Product name
@@ -267,105 +253,626 @@ Each product may contain:
 - Regular price
 - Sale price
 - Stock quantity
-- Low-stock alert threshold
+- Low-stock alert
 - Stock status
 - Product images
 - Product status
 - Seller information
-- Created date
-- Updated date
+- Created and updated information
 
-Sellers and administrators shall be able to manage product information according to their permissions.
-
----
-
-## 4.3 Product Search and Filtering
-
-Customers shall be able to:
-
-- Search products using keywords.
-- Browse products by category.
-- Browse products by brand.
-- Filter products by price.
-- Filter products by availability.
-- Filter products using relevant product attributes.
-
-The search system should provide relevant results based on customer input.
+Sellers and administrators shall manage product information according to their permissions.
 
 ---
 
-## 4.4 Shopping Cart
+## 5.3 Product Search & Filtering
 
 Customers shall be able to:
 
-- Add products to cart.
-- Increase product quantity.
-- Decrease product quantity.
+- Search by keyword.
+- Browse by category.
+- Browse by brand.
+- Filter by price.
+- Filter by availability.
+- Use relevant product attributes.
+
+The product experience shall support dynamic product discovery and direct navigation to product details.
+
+---
+
+## 5.4 Shopping Cart
+
+Customers shall be able to:
+
+- Add products.
+- Increase or decrease quantity.
 - Remove products.
 - View subtotal.
-- View shipping cost.
 - View total amount.
+- See dynamic cart count.
+- Receive feedback when products are added.
 
-The system shall recalculate cart totals whenever product quantities change.
+Cart totals shall update when quantities change.
 
 ---
 
-## 4.5 Wishlist
+## 5.5 Wishlist
 
 Customers shall be able to:
 
 - Add products to wishlist.
 - Remove products from wishlist.
 - View saved products.
-- Move from wishlist to shopping cart where applicable.
+- Move wishlist products to cart where applicable.
+- See a dynamic wishlist count.
 
 ---
 
-## 4.6 Checkout
+## 5.6 Checkout
 
-The checkout process shall contain structured steps.
+Checkout shall support:
 
-### Checkout Information
-
-The customer shall provide:
-
-- Full name
-- Email
-- Phone
-- Address
-- City
-- State/Division
-- Postal code
-- Country
-- Delivery information
-- Payment method
-
-The checkout process shall display:
-
-- Product information
+- Customer information
+- Shipping information
+- Product summary
 - Quantity
 - Subtotal
-- Shipping cost
-- Total amount
+- Coupon discount
+- Final total
+- Payment method
+- Order creation
+
+The checkout flow shall validate required information before order placement.
 
 ---
 
-## 4.7 Payment
+## 5.7 Payment
 
-The platform is designed to support payment integration.
+The platform is designed to support online payment integration.
 
-The planned system can support payment methods such as:
+Supported/implemented payment flows include:
 
 - Cash on Delivery
-- Online payment gateway
+- Stripe-based online checkout flow
 
-Online payment gateway integration may include services such as:
+The payment workflow includes:
+
+1. Checkout initiation
+2. Payment session creation
+3. Payment/session verification
+4. Product and customer metadata handling
+5. Paid-order creation
+6. Order-item creation
+
+---
+
+## 5.8 Coupon & Discount Management
+
+The system shall provide:
+
+- Seller coupon management
+- Customer coupon application
+- Discount calculation
+- Coupon validation
+- Checkout discount integration
+- Customer dashboard coupon access
+
+---
+
+## 5.9 Order Management
+
+Customers shall be able to:
+
+- Place orders.
+- View order history.
+- View order details.
+- Track order status.
+
+Sellers shall be able to:
+
+- View orders containing their products.
+- Search orders.
+- Filter orders by status.
+- View customer and shipping information.
+- View order items.
+- Manage order status.
+
+Admins shall be able to manage platform orders.
+
+---
+
+# 6. Dashboard Requirements
+
+## 6.1 Customer Dashboard
+
+The customer dashboard includes functionality for:
+
+- Customer account information
+- Orders
+- Coupons
+- Payment methods
+- Notifications
+- Account settings
+- AI recommendations
+- Customer support
+
+## 6.2 Seller Dashboard
+
+The seller dashboard includes:
+
+- Product management
+- Categories
+- Brands
+- Inventory
+- Orders
+- Coupons
+- Analytics
+- AI tools
+- Marketing tools
+- Lead-generation tools
+
+## 6.3 Admin Dashboard
+
+The admin dashboard includes:
+
+- Customer management
+- Product management
+- Order management
+- User management
+- Customer blocking/unblocking
+- Reviews
+- Analytics
+- Notifications
+- Platform settings
+
+---
+
+# 7. AI Features
+
+## 7.1 AI Product Description Generator
+
+Sellers can generate product content using AI.
+
+The feature supports:
+
+- Short product descriptions
+- Detailed product descriptions
+- Product-content assistance
+
+## 7.2 AI Shopping Assistant
+
+The platform provides an AI assistant for customer/product discovery and shopping support.
+
+The interface supports:
+
+- Customer messages
+- Assistant responses
+- Loading states
+- Markdown-formatted responses
+- Product-related assistance
+
+## 7.3 AI Product Recommendations
+
+The customer experience includes an AI recommendation area with product filtering.
+
+The recommendation system is intended to help customers discover relevant products.
+
+## 7.4 AI Customer Support
+
+Customer support includes an AI-assisted chat experience with:
+
+- Conversational support
+- Quick answers
+- Customer assistance
+
+---
+
+# 8. Seller Marketing & Lead Generation
+
+Shopora has been expanded with seller-focused marketing and research capabilities.
+
+## 8.1 AI Product Social Sharing
+
+Sellers can select a product and generate promotional content including:
+
+- Marketing caption
+- Promotional hook
+- Trend-focused hashtags
+- Product sharing content
+
+The generated content can be used for social-media promotion.
+
+## 8.2 Facebook Ads Research
+
+Sellers can research Facebook advertising activity using:
+
+- Facebook Page/Ads Library input
+- Advertisement-related research
+- Configurable result/run limits
+
+The feature is intended to help sellers perform competitor and market research.
+
+## 8.3 General Marketing Research
+
+Sellers can perform keyword-based research for different data types, including:
+
+- People
+- Pages
+- Places
+- Posts
+- Videos
+
+## 8.4 Google Maps Business Leads
+
+Sellers can enter:
+
+- Business-related keywords/query
+- Requested lead quantity
+
+The system can retrieve business-lead information for marketing outreach.
+
+## 8.5 Instagram Leads
+
+Sellers can provide:
+
+- Product/category keyword
+- Location
+- Desired lead quantity
+
+The system supports Instagram-focused lead discovery.
+
+## 8.6 TikTok Email Leads
+
+The platform includes TikTok-focused email lead generation for seller outreach.
+
+## 8.7 Customer Product Research
+
+Customers/sellers can research product-related information from Facebook data, including:
+
+- Product reviews
+- Customer feedback
+- Product-related problems
+
+This can help identify customer concerns and market feedback.
+
+## 8.8 Influencer Discovery
+
+Sellers can discover potential influencers across:
+
+- Instagram
+- YouTube
+- TikTok
+
+The purpose is to support product marketing and outreach.
+
+---
+
+# 9. Review & Customer Feedback
+
+The platform supports product review-related functionality.
+
+Requirements include:
+
+- Viewing product reviews.
+- Managing review-related data where permitted.
+- Using customer feedback as a source for product research.
+- Identifying product-related problems from customer feedback.
+
+---
+
+# 10. Deals & Promotional Content
+
+The platform supports promotional experiences including:
+
+- Deals of the Day
+- Product promotions
+- Coupons
+- Discount-related customer experiences
+- Product marketing content
+
+---
+
+# 11. Notifications
+
+The dashboard notification system shall support important platform information.
+
+Notification-related functionality includes:
+
+- Dashboard notifications
+- Important account updates
+- Order-related information
+- Platform activity information
+
+The broader project architecture also allows real-time notifications for important order and inventory events.
+
+---
+
+# 12. Non-Functional Requirements
+
+## 12.1 Performance
+
+- Product and dashboard interfaces should load efficiently.
+- API requests should be structured and optimized.
+- Dynamic data should be fetched only where required.
+- Large lists should support appropriate filtering/search behavior.
+
+## 12.2 Security
+
+- Authentication must be required for protected actions.
+- Role-based authorization must restrict protected routes.
+- Seller product access must respect ownership.
+- Sensitive payment operations must be handled server-side.
+- Protected API requests should use authenticated access.
+
+## 12.3 Scalability
+
+The system should support future expansion of:
+
+- Product catalog
+- Seller accounts
+- Customer accounts
+- Orders
+- AI services
+- Marketing tools
+- Analytics
+
+## 12.4 Maintainability
+
+The project should use:
+
+- Reusable components
+- Modular routes
+- Structured API services
+- Type-safe development
+- Clear role separation
+- Consistent UI patterns
+
+## 12.5 Responsiveness
+
+The interface shall be usable across:
+
+- Desktop
+- Tablet
+- Mobile
+
+---
+
+# 13. Technology Stack
+
+## Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+## Backend
+
+- Node.js
+- Express.js
+- REST APIs
+
+## Database
+
+- PostgreSQL
+- Prisma ORM
+
+## Authentication
+
+- Better Auth
+- Role-based authorization
+
+## AI
+
+- OpenRouter-based AI integration
+- AI product-content generation
+- AI recommendations
+- AI support/chat experiences
+
+## Payments
 
 - Stripe
-- SSLCommerz
+- Cash on Delivery
 
-The currently implemented order flow supports:
+## Real-Time / Platform Services
+
+- Socket.IO architecture for real-time events
+- External data and scraping services for marketing research and lead generation
+
+---
+
+# 14. Data Relationships
+
+The core commerce relationship is:
 
 ```text
-Payment Method: COD
-Payment Status: PENDING
+User
+ ├── Customer
+ ├── Seller
+ └── Admin
+
+Seller
+ └── Products
+
+Product
+ ├── Category
+ ├── Brand
+ ├── Inventory
+ └── OrderItems
+
+Order
+ ├── Customer
+ ├── OrderItems
+ ├── Payment
+ └── Shipping Information
+```
+
+Seller ownership follows:
+
+```text
+User/Seller → Product → OrderItem → Order
+```
+
+This allows the platform to identify product ownership and seller-related orders.
+
+---
+
+# 15. System Workflow
+
+## Customer Workflow
+
+```text
+Register/Login
+      ↓
+Browse/Search Products
+      ↓
+View Product
+      ↓
+Wishlist / Add to Cart
+      ↓
+Apply Coupon
+      ↓
+Checkout
+      ↓
+Payment
+      ↓
+Order Created
+      ↓
+Order Tracking
+```
+
+## Seller Workflow
+
+```text
+Seller Login
+      ↓
+Seller Dashboard
+      ↓
+Create/Manage Products
+      ↓
+Inventory & Coupons
+      ↓
+Receive & Manage Orders
+      ↓
+Analytics
+      ↓
+AI Tools
+      ↓
+Marketing Research
+      ↓
+Lead Generation / Influencer Discovery
+      ↓
+Product Promotion
+```
+
+## Admin Workflow
+
+```text
+Admin Login
+      ↓
+Admin Dashboard
+      ↓
+Manage Customers & Sellers
+      ↓
+Manage Products
+      ↓
+Manage Orders & Inventory
+      ↓
+Reviews / Notifications
+      ↓
+Analytics & Platform Operations
+```
+
+---
+
+# 16. Implementation Alignment
+
+The current project implementation extends the original SRS in several areas.
+
+### Core E-commerce Implementation
+
+- Authentication and role-based access
+- Customer, seller, and admin dashboards
+- Product CRUD
+- Product ownership
+- Categories and brands
+- Cart and wishlist
+- Coupons and discounts
+- Checkout
+- Stripe payment verification
+- Orders and seller order management
+- Seller analytics
+- Inventory export
+- Search and product discovery
+
+### AI Implementation
+
+- AI short and detailed product descriptions
+- AI shopping assistant
+- AI product recommendations
+- AI-assisted customer support
+- AI product-sharing content
+
+### Seller Growth & Marketing Implementation
+
+- Facebook Ads research
+- General marketing research
+- Google Maps business leads
+- Instagram leads
+- TikTok email leads
+- Customer product research
+- Influencer discovery
+- AI social-sharing content
+
+### Customer Experience Implementation
+
+- Customer dashboard
+- Payment method interface
+- Coupons
+- Notifications
+- Account settings
+- Reviews
+- Deals of the Day
+- AI recommendations
+- Customer support
+
+### Admin Operations Implementation
+
+- Customer management
+- Customer block/unblock
+- Product administration
+- Dashboard routes
+- Navigation and sidebar behavior
+
+---
+
+# 17. Project Scope Summary
+
+Shopora has evolved from a standard multi-vendor e-commerce concept into a broader AI-assisted commerce platform.
+
+The system combines:
+
+- E-commerce operations
+- Customer shopping
+- Seller management
+- Admin management
+- AI assistance
+- Payment processing
+- Analytics
+- Customer support
+- Product research
+- Marketing research
+- Lead generation
+- Influencer discovery
+- AI-assisted product promotion
+
+The architecture is designed to support future expansion while keeping customer, seller, and admin responsibilities separated.
+
+---
+
+# 18. Conclusion
+
+Shopora – AI-Powered E-commerce Platform provides a complete ecosystem for customers, sellers, and administrators.
+
+The updated requirements cover the original e-commerce foundation as well as the major functionality implemented during project development, including dashboards, authentication, product management, cart and wishlist, checkout, payments, orders, coupons, analytics, AI features, customer support, reviews, notifications, marketing research, lead generation, influencer discovery, and AI-powered product promotion.
+
+The combination of PostgreSQL with Prisma ORM, structured APIs, role-based access, responsive UI, AI services, payment integration, and marketing automation provides a scalable foundation for a modern e-commerce platform.
