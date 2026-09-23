@@ -18,7 +18,7 @@ import {
 import { getProduct } from "@/type/dashboard/Seller";
 import { getProducts } from "@/lib/api/getProducts";
 import { DeleteProduct } from "@/lib/api/deleteProduct";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import DeleteConfirmModal from "@/components/dashboard/seller/DeleteConfirmModal";
 import AIProductShareModal from "@/components/dashboard/seller/AIProductShareModal";
 
